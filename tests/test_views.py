@@ -1,5 +1,7 @@
+import platform
 import uuid
 
+import django
 import pytest
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -261,7 +263,11 @@ def test_settings_page_shows_versions_and_themes(staff_client, storage):
     content = response.content.decode()
     assert response.status_code == 200
     assert "About Postbox" in content
-    assert response.context["django_version"] in content
+    assert "Version" in content
+    # No server details: they help attackers more than developers
+    assert "django_version" not in response.context
+    assert django.get_version() not in content
+    assert platform.python_version() not in content
     assert set(response.context["themes"]) >= {"mail2003", "mail2000"}
     assert response.context["next_url"] == "/dev/inbox/"
 

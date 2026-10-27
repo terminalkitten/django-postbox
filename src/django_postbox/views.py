@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import platform
 from importlib.metadata import PackageNotFoundError, version
 from typing import TYPE_CHECKING, Any
 
-import django
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.paginator import Paginator
 from django.http import Http404, HttpResponse
@@ -220,8 +218,6 @@ class SettingsView(PermissionMixin, TemplateView):
             themes=available_themes(),
             current_theme=get_theme(self.request),
             postbox_version=postbox_version,
-            django_version=django.get_version(),
-            python_version=platform.python_version(),
             storage_label=get_storage().label,
             **kwargs,
         )
