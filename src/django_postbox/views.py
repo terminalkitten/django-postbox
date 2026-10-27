@@ -81,7 +81,7 @@ class PollMixin(TemplateView):
 
 class OverviewView(PermissionMixin, PollMixin):
     template_name = "postbox/overview.html"
-    paginate_by = 25
+    paginate_by = 15
 
     @cached_property
     def inboxes(self) -> list[Inbox]:

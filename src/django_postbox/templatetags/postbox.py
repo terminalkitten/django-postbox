@@ -1,7 +1,11 @@
+from datetime import datetime, timedelta
+
 from django import template
 from django.templatetags.static import static
+from django.utils import timezone
 from django.utils.html import format_html, format_html_join
 from django.utils.safestring import SafeString
+from django.utils.timesince import timesince
 
 from django_postbox.settings import settings
 
@@ -27,3 +31,11 @@ def postbox_assets() -> SafeString:
     return format_html(
         '{}<script src="{}" defer></script>', links, static("postbox/htmx.min.js")
     )
+
+
+@register.filter
+def ago(moment: datetime) -> str:
+    """Return "just now" within a minute, else "<timesince> ago"."""
+    if timezone.now() - moment < timedelta(minutes=1):
+        return "just now"
+    return f"{timesince(moment)} ago"

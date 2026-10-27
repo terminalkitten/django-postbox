@@ -1,4 +1,5 @@
 {% extends "postbox/base.html" %}
+{% load postbox %}
 
 {% block header_extra %}
   {% if has_inboxes %}
@@ -32,7 +33,7 @@
       <a class="pb-row" href="{% url 'postbox:inbox' inbox.hash %}">
         <span class="pb-address">{{ inbox.address }}</span>
         <span class="pb-badge">{{ inbox.count }}</span>
-        <time class="pb-muted" datetime="{{ inbox.last_received|date:'c' }}">{{ inbox.last_received|timesince }} ago</time>
+        <time class="pb-muted" datetime="{{ inbox.last_received|date:'c' }}">{{ inbox.last_received|ago }}</time>
       </a>
     {% empty %}
       <p class="pb-empty">{% if query %}No inbox matches “{{ query }}”.{% else %}No mail captured yet. Send some and it shows up here.{% endif %}</p>

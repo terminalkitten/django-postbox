@@ -83,6 +83,17 @@ def test_overview_without_htmx_or_theme(staff_client, storage, settings):
     assert b"postbox.css" in response.content
 
 
+def test_ago_filter():
+    from datetime import timedelta
+
+    from django.utils import timezone
+
+    from django_postbox.templatetags.postbox import ago
+
+    assert ago(timezone.now()) == "just now"
+    assert ago(timezone.now() - timedelta(minutes=5)) == "5\xa0minutes ago"
+
+
 def test_inbox_opens_newest_message(staff_client, storage, send, welcome, message):
     welcome.subject = "Newest"
     send(welcome)
@@ -158,7 +169,7 @@ def test_overview_pagination(staff_client, storage, send, welcome):
     welcome.to = [f"user{number}@example.com" for number in range(30)]
     send(welcome)
     response = staff_client.get(reverse("postbox:overview"), {"page": 2})
-    assert len(response.context["page_obj"]) == 5
+    assert len(response.context["page_obj"]) == 15
     assert b"Page 2 of 2" in response.content
 
 
