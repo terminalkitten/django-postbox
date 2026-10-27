@@ -32,7 +32,6 @@ body { font-size: 11px; }
 .pb-header .pb-muted { color: #fff; }
 .pb-brand { font: bold 12px Tahoma, sans-serif; gap: 4px; }
 .pb-brand img { width: 18px; height: 18px; }
-.pb-brand small { font-weight: normal; }
 
 .pb-main { padding: 6px 4px 4px; }
 

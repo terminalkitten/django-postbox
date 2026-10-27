@@ -10,7 +10,7 @@
 </head>
 <body hx-boost="true" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
   <header class="pb-header">
-    <a class="pb-brand" href="{% url 'postbox:overview' %}"><img src="{% static 'postbox/logo.svg' %}" alt="">Postbox<small>Mail</small></a>
+    <a class="pb-brand" href="{% url 'postbox:overview' %}"><img src="{% static 'postbox/logo.svg' %}" alt="">Postbox</a>
     {% block header_extra %}{% endblock %}
     <a class="pb-button pb-options" href="{% url 'postbox:settings' %}?next={{ request.path|urlencode }}">Options</a>
   </header>

@@ -36,7 +36,6 @@ body { font-size: 11px; }
   text-shadow: 1px 1px 0 #163f99;
 }
 .pb-brand img { width: 34px; height: 34px; filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.25)); }
-.pb-brand small { font: normal 10px Verdana, sans-serif; opacity: 0.85; align-self: flex-end; margin-bottom: 4px; }
 
 .pb-card { box-shadow: 1px 1px 0 #fff inset, 2px 2px 0 rgba(0, 0, 0, 0.08); }
 
