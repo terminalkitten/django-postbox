@@ -1,0 +1,49 @@
+{% extends "postbox/base.html" %}
+
+{% block header_extra %}
+  {% if has_inboxes %}
+    <form method="post" action="{% url 'postbox:clear_all' %}" hx-confirm="Delete all captured mail?">
+      {% csrf_token %}<button class="pb-button pb-button-danger">Clear all</button>
+    </form>
+  {% endif %}
+{% endblock %}
+
+{% block status %}
+  <span class="pb-status-main">{% if query %}{{ page_obj.paginator.count }} inbox{{ page_obj.paginator.count|pluralize:"es" }} matching “{{ query }}”{% else %}{{ page_obj.paginator.count }} inbox{{ page_obj.paginator.count|pluralize:"es" }}{% endif %}</span>
+  <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+{% endblock %}
+
+{% block content %}
+  <section class="pb-card pb-overview">
+    <div class="pb-overview-header">
+      <h1 class="pb-title">Inboxes</h1>
+      {% if has_inboxes %}
+        {# Only the rows are swapped, so the input keeps focus while typing #}
+        <form method="get" role="search">
+          <input class="pb-search" type="search" name="q" value="{{ query }}" placeholder="Search addresses" aria-label="Search addresses"
+                 hx-get="{{ request.path }}" hx-trigger="input changed delay:300ms, search"
+                 hx-target="#inbox-rows" hx-select="#inbox-rows" hx-select-oob="#status" hx-swap="outerHTML" hx-push-url="true">
+        </form>
+      {% endif %}
+    </div>
+    <div id="inbox-rows">
+    {% include "postbox/_poller.html" with target="#inbox-rows" %}
+    {% for inbox in page_obj %}
+      <a class="pb-row" href="{% url 'postbox:inbox' inbox.hash %}">
+        <span class="pb-address">{{ inbox.address }}</span>
+        <span class="pb-badge">{{ inbox.count }}</span>
+        <time class="pb-muted" datetime="{{ inbox.last_received|date:'c' }}">{{ inbox.last_received|timesince }} ago</time>
+      </a>
+    {% empty %}
+      <p class="pb-empty">{% if query %}No inbox matches “{{ query }}”.{% else %}No mail captured yet. Send some and it shows up here.{% endif %}</p>
+    {% endfor %}
+    {% if page_obj.paginator.num_pages > 1 %}
+      <nav class="pb-pagination" aria-label="Pages">
+        {% if page_obj.has_previous %}<a class="pb-button" href="{% querystring page=page_obj.previous_page_number %}">Previous</a>{% endif %}
+        <span class="pb-muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} · {{ page_obj.paginator.count }} inboxes</span>
+        {% if page_obj.has_next %}<a class="pb-button" href="{% querystring page=page_obj.next_page_number %}">Next</a>{% endif %}
+      </nav>
+    {% endif %}
+    </div>
+  </section>
+{% endblock %}

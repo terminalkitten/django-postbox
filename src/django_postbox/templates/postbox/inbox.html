@@ -1,0 +1,97 @@
+{% extends "postbox/base.html" %}
+
+{% block title %}{{ address }} · Postbox{% endblock %}
+
+{% block header_extra %}
+  <a class="pb-button" href="{% url 'postbox:overview' %}">&larr; Inboxes</a>
+  <span class="pb-muted">{{ address }}</span>
+  <form method="post" action="{% url 'postbox:clear' hash %}" hx-confirm="Delete all mail for {{ address }}?">
+    {% csrf_token %}<button class="pb-button pb-button-danger">Clear inbox</button>
+  </form>
+{% endblock %}
+
+{% block status %}
+  <span class="pb-status-main">{{ address }}</span>
+  <span>{% if query %}{{ messages|length }} of {{ total }} matching “{{ query }}”{% elif position %}Message {{ position }} of {{ total }}{% endif %}</span>
+  <span>{% if tab == "html" %}HTML{% else %}{{ tab|capfirst }}{% endif %} view</span>
+{% endblock %}
+
+{% block content %}
+  <div class="pb-inbox">
+    <nav class="pb-card pb-list">
+      <div class="pb-bar">
+        <span id="message-count">Inbox ({{ total }})</span>
+        {# Outside the swapped list, so the input keeps focus while typing #}
+        <input class="pb-search" type="search" name="q" value="{{ query }}" placeholder="Search mail" aria-label="Search mail"
+               hx-get="{% url 'postbox:inbox' hash %}" hx-trigger="input changed delay:300ms, search"
+               hx-target="#message-items" hx-select="#message-items" hx-select-oob="#status" hx-swap="outerHTML" hx-push-url="true">
+      </div>
+      {# The scroll container is never swapped, so its scroll position stays #}
+      <div class="pb-list-scroll">
+      <div id="message-items">
+      {% include "postbox/_poller.html" with target="#message-items" oob="#status,#message-count" %}
+      {% for item in messages %}
+        <a class="pb-list-item" href="{% url 'postbox:message' item.hash item.id %}{% if query %}?q={{ query|urlencode }}{% endif %}"
+           hx-target="#detail" hx-select="#detail" hx-swap="outerHTML" hx-select-oob="#message-items,#status"
+           {% if item.id == message.id %}aria-current="page"{% endif %}>
+          <span class="pb-list-subject">{{ item.subject|default:"(no subject)" }}</span>
+          <span class="pb-muted">{{ item.sender }}</span>
+          <time class="pb-muted" datetime="{{ item.created_at|date:'c' }}">{{ item.created_at|date:"j M H:i:s" }}</time>
+        </a>
+      {% empty %}
+        <p class="pb-empty">No mail matches “{{ query }}”.</p>
+      {% endfor %}
+      </div>
+      </div>
+    </nav>
+
+    <article id="detail" class="pb-card pb-detail">
+        <header class="pb-detail-header">
+          <h1 class="pb-title">{{ message.subject|default:"(no subject)" }}</h1>
+          <dl class="pb-meta">
+            <dt>From</dt><dd>{{ message.sender }}</dd>
+            <dt>To</dt><dd>{{ message.email.to|default:message.recipient }}</dd>
+            {% if message.email.cc %}<dt>Cc</dt><dd>{{ message.email.cc }}</dd>{% endif %}
+            <dt>Date</dt><dd>{{ message.created_at|date:"DATETIME_FORMAT" }}</dd>
+          </dl>
+          <div class="pb-actions">
+            <a class="pb-button" href="{% url 'postbox:message_raw' message.hash message.id %}" hx-boost="false">Download .eml</a>
+            <form method="post" action="{% url 'postbox:delete' message.hash message.id %}">
+              {% csrf_token %}<button class="pb-button pb-button-danger">Delete</button>
+            </form>
+          </div>
+        </header>
+
+        <div class="pb-tabs" role="tablist">
+          {% for name in tabs %}
+            <a role="tab" href="{% querystring tab=name %}" hx-target="#detail" hx-select="#detail" hx-select-oob="#status" hx-swap="outerHTML"{% if name == tab %} aria-selected="true"{% endif %}>
+              {% if name == "html" %}HTML{% else %}{{ name|capfirst }}{% endif %}{% if name == "attachments" %} ({{ message.attachments|length }}){% endif %}
+            </a>
+          {% endfor %}
+        </div>
+
+        <div class="pb-tab-panel">
+          {% if tab == "html" %}
+            <iframe class="pb-frame" title="HTML body" sandbox="allow-popups allow-popups-to-escape-sandbox" srcdoc="{{ mail_html }}"></iframe>
+          {% elif tab == "text" %}
+            <pre class="pb-pre">{{ message.text|default:"(no text body)" }}</pre>
+          {% elif tab == "headers" %}
+            <dl class="pb-meta pb-headers">
+              {% for name, value in message.headers %}<dt>{{ name }}</dt><dd>{{ value }}</dd>{% endfor %}
+            </dl>
+          {% elif tab == "raw" %}
+            <pre class="pb-pre">{{ message.raw_text }}</pre>
+          {% elif tab == "attachments" %}
+            {% for attachment in message.attachments %}
+              <a class="pb-row" hx-boost="false" href="{% url 'postbox:attachment' message.hash message.id forloop.counter0 %}">
+                <span>{{ attachment.filename }}</span>
+                <span class="pb-muted">{{ attachment.content_type }} · {{ attachment.content|length|filesizeformat }}</span>
+              </a>
+            {% empty %}
+              <p class="pb-empty">No attachments.</p>
+            {% endfor %}
+          {% endif %}
+        </div>
+    </article>
+  </div>
+{% endblock %}

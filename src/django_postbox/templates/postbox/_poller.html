@@ -1,0 +1,4 @@
+{# Polls the current page every 5s; the view answers 204 (no swap) while poll_state is unchanged. #}
+{# A separate element so its hx-* attributes are not inherited by the links next to it. #}
+<div hidden hx-get="{{ request.path }}{% querystring state=poll_state %}" hx-trigger="every 5s"
+     hx-target="{{ target }}" hx-select="{{ target }}" hx-select-oob="{{ oob|default:'#status' }}" hx-swap="outerHTML" hx-push-url="false"></div>
