@@ -1,0 +1,32 @@
+# django-postbox documentation, built with dokk: uv run dokk serve / uv run dokk build
+title = "Django Postbox"
+description = "Catch outgoing Django mail and browse it per address, like a real inbox."
+site_url = "https://terminalkitten.github.io/django-postbox/"
+content_dir = "docs"
+
+[links]
+github = "https://github.com/terminalkitten/django-postbox"
+edit_url = "https://github.com/terminalkitten/django-postbox/edit/main/docs/{path}"
+
+[theme]
+style = "vega"
+color = "indigo"
+code_light = "default"
+code_dark = "github-dark"
+
+[[sidebar]]
+label = "Start"
+items = ["index.md", "getting-started/index.md"]
+
+[[sidebar]]
+autogenerate = "guides"
+
+[[sidebar]]
+autogenerate = "reference"
+
+[[sidebar]]
+label = "Links"
+items = [
+  { label = "GitHub", link = "https://github.com/terminalkitten/django-postbox" },
+  { label = "PyPI", link = "https://pypi.org/project/django-postbox/" },
+]
