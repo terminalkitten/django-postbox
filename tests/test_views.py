@@ -54,7 +54,7 @@ def test_overview_lists_inboxes(staff_client, message):
     assert b"htmx.min.js" in response.content
 
 
-@pytest.mark.parametrize("theme", ["mail2003", "mail2000"])
+@pytest.mark.parametrize("theme", ["mail2003", "mail2000", "mail2010", "modern"])
 def test_bundled_themes_exist(staff_client, storage, settings, theme):
     from django.contrib.staticfiles import finders
 

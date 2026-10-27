@@ -60,6 +60,7 @@ def render_pages() -> dict[str, str]:
 
     from django_postbox.backends import EmailBackend
     from django_postbox.storages import get_storage, hash_address
+    from django_postbox.themes import BUNDLED_THEMES
     from tests.project.management.commands.send_test_mails import (
         demo_mails,
         random_mails,
@@ -82,7 +83,7 @@ def render_pages() -> dict[str, str]:
         "search": f"/dev/inbox/{alice}/?q=re&tab=text",
     }
     html = {}
-    for theme in ("mail2000", "mail2003"):
+    for theme in BUNDLED_THEMES:
         with override_settings(POSTBOX_THEME=theme):
             for name, url in pages.items():
                 content = client.get(url).content.decode()
@@ -101,6 +102,8 @@ def screenshot(chrome: str, html: str, target: Path, workdir: Path) -> None:
             "--headless=new",
             "--disable-gpu",
             "--hide-scrollbars",
+            # Light mode, whatever the OS uses, so the images are stable
+            "--blink-settings=preferredColorScheme=1",
             "--force-device-scale-factor=2",
             f"--window-size={WINDOW}",
             f"--screenshot={target}",

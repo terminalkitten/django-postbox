@@ -8,7 +8,7 @@ sidebar:
 The pages load their assets through `{% postbox_assets %}`. All of them ship with the package, so nothing comes from a CDN and there is no build step:
 
 - `postbox/postbox.css`: layout and structure only, plus CSS variables with plain defaults
-- `postbox/themes/<POSTBOX_THEME>.css`: the look. Bundled: `mail2003` (default, webmail circa 2003) and `mail2000` (classic 2000 desktop)
+- `postbox/themes/<POSTBOX_THEME>.css`: the look. Bundled: `mail2003` (default, webmail circa 2003), `mail2000` (classic 2000 desktop), `mail2010` (clean early-2010s webmail) and `modern` (rounded, light and dark mode)
 - `postbox/htmx.min.js`
 
 ## Themes
@@ -26,6 +26,8 @@ Every viewer can pick their own theme under **Options** (top right). The choice 
 | `mail2000` | `mail2003` |
 | --- | --- |
 | ![Overview, mail2000 theme](../img/overview-mail2000.png) | ![Overview, mail2003 theme](../img/overview-mail2003.png) |
+| **`mail2010`** | **`modern`** |
+| ![Inbox, mail2010 theme](../img/inbox-mail2010.png) | ![Inbox, modern theme](../img/inbox-modern.png) |
 
 ## Screenshots
 
