@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://terminalkitten.github.io/django-postbox/">
-    <img src="https://raw.githubusercontent.com/terminalkitten/django-postbox/main/public/logo.svg" alt="Postbox logo" width="72" height="72">
+    <img src="https://raw.githubusercontent.com/terminalkitten/django-postbox/main/src/django_postbox/static/postbox/logo.svg" alt="Postbox logo" width="72" height="72">
   </a>
 </p>
 

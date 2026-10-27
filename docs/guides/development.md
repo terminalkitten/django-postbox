@@ -45,6 +45,10 @@ make screenshots   # rebuild docs/img in every theme
 
 `make screenshots` fills a throwaway in-memory database with demo mail, so your own test database is left alone. It needs Chrome; set `CHROME=/path/to/chrome` if it is not found.
 
+:::note[One logo]
+The logo lives in `src/django_postbox/static/postbox/logo.svg`, where the app needs it. The docs site uses it through the symlinks `public/logo.svg` and `public/favicon.svg`, and the README links to it directly. Change it there and it changes everywhere.
+:::
+
 ## Update htmx
 
 ```bash

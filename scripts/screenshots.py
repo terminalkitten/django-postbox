@@ -1,5 +1,5 @@
 """
-Render the README and docs screenshots with headless Chrome, and export the logo.
+Render the README and docs screenshots with headless Chrome.
 
 Uses a throwaway in-memory database filled with the demo mails, so your own
 db/postbox.db is never touched. Set CHROME to the browser binary if it is not found.
@@ -20,7 +20,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 STATIC = ROOT / "src/django_postbox/static"
 IMAGES = ROOT / "docs/img"
-PUBLIC = ROOT / "public"
 CHROME_CANDIDATES = (
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     "google-chrome",
@@ -118,11 +117,6 @@ def main() -> None:
     chrome = find_chrome()
     setup_django()
     IMAGES.mkdir(parents=True, exist_ok=True)
-    PUBLIC.mkdir(exist_ok=True)
-
-    logo = STATIC / "postbox/logo.svg"
-    for target in (IMAGES / "logo.svg", PUBLIC / "logo.svg", PUBLIC / "favicon.svg"):
-        shutil.copyfile(logo, target)
 
     with tempfile.TemporaryDirectory() as workdir:
         for name, html in render_pages().items():
