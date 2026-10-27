@@ -1,0 +1,85 @@
+# Release: push a tag v<version> (git tag v0.1.0 && git push origin v0.1.0). The version comes
+# from the tag (hatch-vcs), there is nothing to bump. The wheel is built, tested as installed,
+# published to PyPI with trusted publishing once the `pypi` environment is approved, and only
+# then attached to a GitHub release. Tags like v0.2.0rc1 become pre-releases.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0 # hatch-vcs reads the version from the tag
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+      - run: uv build --out-dir dist
+      - name: Version matches the tag
+        run: ls dist/django_postbox-"${GITHUB_REF_NAME#v}"-py3-none-any.whl
+      - run: uvx twine check dist/*
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist
+
+  # Install the built wheel, not the source tree, and run the tests: catches a package with
+  # missing templates or static files. Every Python and Django version runs in CI on each push.
+  test-wheel:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # for tests/
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e
+        with:
+          python-version: "3.13"
+      - run: uv venv && uv pip install pytest pytest-django pytest-cov "$(ls dist/*.whl)"
+      - run: .venv/bin/python -m pytest -q
+
+  publish:
+    needs: test-wheel
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write # PyPI trusted publishing, no token needed
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+  # Only after PyPI accepted it, so a failed publish never leaves a GitHub release behind
+  github-release:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          pre=$([[ "$TAG" =~ (a|b|rc|dev)[0-9]*$ ]] && echo --prerelease || true)
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            # A drafted release with hand-written notes gets the files and is published
+            gh release upload "$TAG" dist/* --repo "$GITHUB_REPOSITORY" --clobber
+            gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --verify-tag --draft=false $pre
+          else
+            gh release create "$TAG" dist/* --repo "$GITHUB_REPOSITORY" \
+              --verify-tag --generate-notes --title "$TAG" $pre
+          fi

@@ -56,3 +56,18 @@ make htmx
 ```
 
 This downloads the latest htmx release into `src/django_postbox/static/postbox/htmx.min.js`. Commit the result.
+
+## Releasing
+
+A release is one tag. The version comes from it, so there is nothing to bump in the code.
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The release workflow builds the package, runs the tests against the installed wheel, waits for someone to approve the `pypi` environment, publishes to PyPI and then creates the GitHub release with generated notes. Tags ending in `a1`, `b1`, `rc1` or `.dev1` become pre-releases.
+
+:::tip
+Want hand-written release notes? Draft a GitHub release for the tag first. The workflow attaches the files to your draft and publishes it, instead of generating notes.
+:::

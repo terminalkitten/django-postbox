@@ -1,10 +1,11 @@
 [project]
 name = "django-postbox"
-version = "0.0.1"
+dynamic = ["version"]
 description = "Catch outgoing Django mail and browse it per address, like a real inbox"
 readme = "README.md"
 authors = [{ name = "terminalkitten", email = "25918382+terminalkitten@users.noreply.github.com" }]
 license = "MIT"
+license-files = ["LICENSE"]
 keywords = ["django", "email", "mail", "inbox", "development", "htmx"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -44,11 +45,19 @@ Source = "https://github.com/terminalkitten/django-postbox"
 Issues = "https://github.com/terminalkitten/django-postbox/issues"
 
 [build-system]
-requires = ["uv_build>=0.13.5,<0.14.0"]
-build-backend = "uv_build"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
-[tool.uv.build-backend]
-source-exclude = [".claude", ".skills"]
+# The version comes from the git tag (v0.1.0 -> 0.1.0), there is nothing to bump
+[tool.hatch.version]
+source = "vcs"
+raw-options = { version_scheme = "no-guess-dev", fallback_version = "0.0.0" }
+
+[tool.hatch.build.targets.sdist]
+only-include = ["src", "README.md", "LICENSE"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/django_postbox"]
 
 [tool.ty.src]
 exclude = [".claude", ".skills"]
