@@ -1,0 +1,89 @@
+[project]
+name = "django-postbox"
+version = "0.0.1"
+description = "Catch outgoing Django mail and browse it per address, like a real inbox"
+readme = "README.md"
+authors = [{ name = "terminalkitten", email = "25918382+terminalkitten@users.noreply.github.com" }]
+license = "MIT"
+keywords = ["django", "email", "mail", "inbox", "development", "htmx"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
+    "Framework :: Django :: 6.1",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Communications :: Email",
+]
+requires-python = ">=3.11"
+dependencies = ["django>=5.2"]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-django",
+    "pytest-cov",
+    "ruff",
+    "ty",
+    "django-stubs",
+    "tox",
+    "tox-uv",
+    "dokk[format,search,serve]>=0.0.4",
+]
+
+[project.urls]
+Home = "https://github.com/terminalkitten/django-postbox"
+Source = "https://github.com/terminalkitten/django-postbox"
+Issues = "https://github.com/terminalkitten/django-postbox/issues"
+
+[build-system]
+requires = ["uv_build>=0.13.5,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+source-exclude = [".claude", ".skills"]
+
+[tool.ty.src]
+exclude = [".claude", ".skills"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+extend-exclude = [".claude", ".skills", "src/django_postbox/migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "PT", "ANN", "S", "PERF", "C4", "RUF", "DJ", "TC"]
+ignore = ["E501", "ANN401"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["ANN", "S101", "S105", "S106", "DJ008", "RUF012"]
+"scripts/**" = ["S310"]
+
+[tool.ruff.format]
+quote-style = "preserve"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+filterwarnings = ["error"]
+addopts = """\
+    --strict-config
+    --strict-markers
+    --ds=tests.project.settings
+    --cov
+    --cov-report=term-missing:skip-covered
+    """
+django_find_project = false
+
+[tool.coverage.run]
+source = ["django_postbox"]
+omit = ["*/django_postbox/migrations/*"]
+
+[tool.coverage.report]
+fail_under = 90
