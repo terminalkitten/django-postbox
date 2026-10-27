@@ -1,4 +1,4 @@
-.PHONY: rs migrate shell mail htmx lint test docs docs-serve clean
+.PHONY: rs migrate shell mail htmx screenshots lint test docs docs-serve clean
 
 rs:
 	uv run python manage.py runserver
@@ -15,6 +15,9 @@ mail:
 
 htmx:
 	uv run python scripts/update_htmx.py
+
+screenshots:
+	uv run python scripts/screenshots.py
 
 lint:
 	uv run ruff check --fix .
