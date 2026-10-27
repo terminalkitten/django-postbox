@@ -1,34 +1,107 @@
 ---
-title: Email backend
-description: How postbox captures mail, forwards it to the next backend and skips domains.
+title: Capture and forward
+description: Choose what Postbox keeps and where mail goes next, with a recipe for each setup.
 sidebar:
   order: 1
 ---
 
-`django_postbox.backends.EmailBackend` does two things for every message:
+Postbox is a regular Django email backend. For every message your project sends, it does two things:
 
-1. **Capture.** It stores one copy per recipient (To, Cc and Bcc). Addresses are lowercased, and display names are dropped.
-2. **Forward.** If a next backend is configured, it hands **every** message to it, captured or not, and returns that backend's count.
+1. **It keeps a copy for every recipient**: To, Cc and Bcc. Each address gets its own inbox, so `alice@example.com` and `bob@example.com` each see the mail as they received it.
+2. **It passes the message on**, if you tell it where to. Otherwise the mail stops here.
 
-With no next backend, postbox is the end of the line and nothing leaves your machine.
+Pick the recipe that matches your situation.
 
-## Next backend
+## Keep everything on your machine
 
-| Django | How |
-| ------ | --- |
-| 6.1+ with `MAILERS` | `"OPTIONS": {"forward_to": "<alias>"}` names another mailer |
-| 5.2, 6.0, or 6.1 without `MAILERS` | `POSTBOX_FORWARD_BACKEND = "dotted.path.EmailBackend"` |
+This is the default. With no next backend, Postbox is the end of the line: you read the mail in the inbox, and nobody else ever gets it.
 
-If the next backend is postbox itself, you get `ImproperlyConfigured` instead of an endless loop.
+::::tabs{sync="django"}
+:::tab[Django 6.1+]
+```python title="settings.py"
+MAILERS = {
+    "default": {"BACKEND": "django_postbox.backends.EmailBackend"},
+}
+```
+:::
 
-## Skip domains
+:::tab[Django 5.2 and 6.0]
+```python title="settings.py"
+EMAIL_BACKEND = "django_postbox.backends.EmailBackend"
+```
+:::
+::::
 
-```python
+This is what you want on your laptop, and on review or staging servers where testers sign up with real-looking addresses.
+
+## Also print every mail in the terminal
+
+Handy when you work in the terminal anyway: the mail shows up in the inbox *and* in your `runserver` output.
+
+::::tabs{sync="django"}
+:::tab[Django 6.1+]
+```python title="settings.py" {4}
+MAILERS = {
+    "default": {
+        "BACKEND": "django_postbox.backends.EmailBackend",
+        "OPTIONS": {"forward_to": "console"},
+    },
+    "console": {
+        "BACKEND": "django.core.mail.backends.console.EmailBackend",
+    },
+}
+```
+:::
+
+:::tab[Django 5.2 and 6.0]
+```python title="settings.py" {2}
+EMAIL_BACKEND = "django_postbox.backends.EmailBackend"
+POSTBOX_FORWARD_BACKEND = "django.core.mail.backends.console.EmailBackend"
+```
+:::
+::::
+
+`forward_to` names another entry in `MAILERS`. `POSTBOX_FORWARD_BACKEND` is the dotted path of any email backend.
+
+## Deliver for real and keep a copy
+
+Forward to SMTP and Postbox becomes a logbook: everyone gets their mail as usual, and you can still look up what was sent.
+
+```python title="settings.py"
+MAILERS = {
+    "default": {
+        "BACKEND": "django_postbox.backends.EmailBackend",
+        "OPTIONS": {"forward_to": "smtp"},
+    },
+    "smtp": {
+        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+        "OPTIONS": {"host": "smtp.example.com", "port": 587, "use_tls": True},
+    },
+}
+```
+
+:::danger[Every message is forwarded]
+Postbox passes on *every* message, also the ones it captured. Never forward to a real SMTP server on a test server with real customer addresses in its database: they would get your test mail.
+:::
+
+## Keep some mail out of the inbox
+
+Some mail is noise in the inbox, like error reports to your own team. List those domains and Postbox will not keep a copy:
+
+```python title="settings.py"
 POSTBOX_SKIP_DOMAINS = ["company.com"]
 ```
 
-Postbox does not capture mail to `company.com` or any of its subdomains (`eu.company.com`), but still forwards it. If a mail goes to both a skipped and a normal address, only the normal address gets a copy.
+Subdomains count too, so `eu.company.com` is skipped as well. A mail to both `dev@company.com` and `alice@example.com` still lands in Alice's inbox, only the copy for `company.com` is left out.
 
-## Failures
+:::note
+Skipping only decides what Postbox *keeps*. Whether the mail goes anywhere is still up to the forward: with a forward the skipped mail is delivered, without one it is dropped.
+:::
 
-If the storage fails, the error is raised, unless the backend was created with `fail_silently=True`.
+## When storing fails
+
+If Postbox cannot store a mail, for example because the database is down, you get the error, just like with any other backend. Sending with `fail_silently=True` ignores it, on Django versions that still support that argument.
+
+:::details[What about a loop?]
+A forward that points back at Postbox would send every mail around forever. Postbox refuses to start instead, with an `ImproperlyConfigured` error that tells you so.
+:::

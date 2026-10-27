@@ -1,24 +1,38 @@
 ---
 title: Settings
-description: Every Django Postbox setting with its default.
+description: Every Django Postbox setting, its default, and when you would change it.
 sidebar:
   order: 1
 ---
 
-All settings are optional and read when they are used, so `override_settings` works in tests.
+Every setting is optional. Postbox reads them each time it needs one, so `override_settings` works in your tests.
 
-| Setting | Default | Description |
-| ------- | ------- | ----------- |
-| `POSTBOX_FORWARD_BACKEND` | `None` | Dotted path of the next backend. On Django 6.1+ use the `forward_to` option in `MAILERS` |
-| `POSTBOX_STORAGE` | `"django_postbox.storages.DatabaseStorage"` | Where captured mail lives, see [Storages](../guides/storages.md) |
-| `POSTBOX_CACHE` | `"default"` | Cache alias for `CacheStorage` |
-| `POSTBOX_SKIP_DOMAINS` | `()` | Domains (and their subdomains) that are never captured, only forwarded |
-| `POSTBOX_PERMISSIONS` | `("django_postbox.permissions.IsStaff",)` | Permission classes or dotted paths, see [Permissions](../guides/permissions.md) |
-| `POSTBOX_THEME` | `"mail2003"` | `"mail2003"`, `"mail2000"`, `"mail2010"`, `"modern"`, your own `postbox/themes/<name>.css`, or `None` for the plain base. Viewers can override it per browser under Options, see [Assets and templates](../guides/assets.md) |
-| `POSTBOX_LOAD_HTMX` | `True` | Load the bundled htmx. Turn it off when your project provides htmx itself |
+| Setting | Default | Change it when you want to |
+| --- | --- | --- |
+| `POSTBOX_FORWARD_BACKEND` | `None` | pass mail on to another backend on Django 5.2 or 6.0, see [Capture and forward](../guides/capture-and-forward.md) |
+| `POSTBOX_SKIP_DOMAINS` | `()` | keep mail to some domains out of the inbox, like `["company.com"]` |
+| `POSTBOX_PERMISSIONS` | `("django_postbox.permissions.IsStaff",)` | let other people read the inbox, see [Who can read the inbox](../guides/permissions.md) |
+| `POSTBOX_STORAGE` | `"django_postbox.storages.DatabaseStorage"` | keep mail in memory or a cache, see [Where mail is kept](../guides/storages.md) |
+| `POSTBOX_CACHE` | `"default"` | use another alias from `CACHES` for the cache storage |
+| `POSTBOX_THEME` | `"mail2003"` | start everyone on `"mail2000"`, `"mail2010"`, `"modern"` or your own theme, see [Themes](../guides/themes.md) |
+| `POSTBOX_LOAD_HTMX` | `True` | load your project's own htmx instead of the bundled copy |
 
-## Backend options (Django 6.1+ `MAILERS`)
+## Mailer options
 
-| Option | Description |
-| ------ | ----------- |
-| `forward_to` | Alias of the mailer that receives every message after capture |
+On Django 6.1 and later, Postbox is configured as one of your `MAILERS`. It takes one option:
+
+| Option | Default | Change it when you want to |
+| --- | --- | --- |
+| `forward_to` | none | pass every mail on to another mailer, by its alias |
+
+```python title="settings.py"
+MAILERS = {
+    "default": {
+        "BACKEND": "django_postbox.backends.EmailBackend",
+        "OPTIONS": {"forward_to": "console"},
+    },
+    "console": {
+        "BACKEND": "django.core.mail.backends.console.EmailBackend",
+    },
+}
+```

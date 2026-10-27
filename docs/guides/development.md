@@ -1,17 +1,54 @@
 ---
-title: Development
-description: Run the test project, the tests and the docs locally.
+title: Working on Postbox
+description: Run the test project, the tests and the docs, and refresh the screenshots and htmx.
 sidebar:
   order: 5
 ---
 
+Want to change Postbox itself? The repository has a small Django project in `tests/project` that you can run and click through.
+
+:::steps
+1. **Install** the dependencies with [uv](https://docs.astral.sh/uv/):
+
+   ```bash
+   uv sync
+   ```
+
+2. **Set up the test project** with its database, a user to log in with and a few hundred demo mails for ten random people:
+
+   ```bash
+   make migrate
+   uv run python manage.py createsuperuser
+   make mail
+   ```
+
+3. **Run it** and open [http://127.0.0.1:8000/dev/inbox/](http://127.0.0.1:8000/dev/inbox/):
+
+   ```bash
+   make rs
+   ```
+:::
+
+## Checks
+
 ```bash
-uv sync
-make migrate        # creates db/postbox.db for the test project in tests/project
-make mail           # sends a few test mails
-make rs             # http://127.0.0.1:8000/dev/inbox/ (create a superuser first)
-make lint           # ruff, ty and pytest
-uv run tox          # every supported Python and Django version
-make docs-serve     # these docs with live reload
-make screenshots    # rebuild the screenshots in docs/img with headless Chrome
+make lint      # ruff, ty and pytest with coverage
+uv run tox     # every supported Python and Django version
 ```
+
+## Docs and screenshots
+
+```bash
+make docs-serve    # these docs, reloading as you edit
+make screenshots   # rebuild docs/img in every theme
+```
+
+`make screenshots` fills a throwaway in-memory database with demo mail, so your own test database is left alone. It needs Chrome; set `CHROME=/path/to/chrome` if it is not found.
+
+## Update htmx
+
+```bash
+make htmx
+```
+
+This downloads the latest htmx release into `src/django_postbox/static/postbox/htmx.min.js`. Commit the result.

@@ -7,98 +7,162 @@
 <h1 align="center">django-postbox</h1>
 
 <p align="center">
-  <strong>Catch outgoing Django mail and browse it per address, like a real inbox.</strong><br>
-  For local development and review apps: every mail your project sends lands in an inbox<br>
-  per recipient, with HTML, text, headers, raw source and attachments. No SMTP server needed.
+  <strong>See every mail your Django project sends, in an inbox per address.</strong><br>
+  For local development, review apps and staging: read password resets, invites and receipts<br>
+  the way your users will, with HTML, text, headers and attachments. No SMTP server needed.
+</p>
+
+<p align="center">
+  <a href="https://terminalkitten.github.io/django-postbox/"><strong>Documentation</strong></a> ·
+  <a href="https://terminalkitten.github.io/django-postbox/getting-started/">Getting started</a> ·
+  <a href="https://terminalkitten.github.io/django-postbox/guides/capture-and-forward/">Capture and forward</a> ·
+  <a href="https://terminalkitten.github.io/django-postbox/guides/permissions/">Permissions</a> ·
+  <a href="https://terminalkitten.github.io/django-postbox/guides/themes/">Themes</a> ·
+  <a href="https://pypi.org/project/django-postbox/">PyPI</a>
 </p>
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-mail2000.png" alt="An inbox with the newsletter mail open, mail2000 theme" width="800">
 </p>
 
-- **An inbox per address.** To, Cc and Bcc each get their own copy, browsable at `/dev/inbox/`.
-- **Stackable backend.** Capture, then forward to the next backend (console, SMTP, ...).
-- **Skip domains.** Never capture mail to e.g. your own company domain, only forward it.
-- **Permission classes.** DRF-style, from settings. Staff only by default.
-- **Database, in-memory or cache storage.**
-- **htmx + hand-written CSS**, bundled, with no build step.
+Your project sends mail: password resets, invites, order confirmations. While you build them, you want to see them the way your users will, without anything leaving your laptop or test server.
 
-Supports Python 3.11–3.14 and Django 5.2, 6.0 and 6.1 (including the new `MAILERS` setting).
+Postbox is a Django email backend that catches every mail and gives **each recipient their own inbox**. Open `/dev/inbox/`, click `alice@example.com`, and read exactly what Alice got: HTML, plain text, headers and attachments.
 
-## Themes
+- **An inbox per person.** To, Cc and Bcc each get their own copy.
+- **Live.** New mail shows up within five seconds, without reloading.
+- **Safe.** Mail HTML is [sandboxed](https://terminalkitten.github.io/django-postbox/reference/how-it-works/), and only staff can [open the inbox](https://terminalkitten.github.io/django-postbox/guides/permissions/) by default.
+- **Fits your setup.** [Pass mail on](https://terminalkitten.github.io/django-postbox/guides/capture-and-forward/) to the console or SMTP, and [keep it](https://terminalkitten.github.io/django-postbox/guides/storages/) in the database, memory or a cache.
+- **[Four themes](https://terminalkitten.github.io/django-postbox/guides/themes/)**, no build step, no CDN.
 
-| `mail2000` | `mail2003` (default) |
-| --- | --- |
-| ![Overview, mail2000 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/overview-mail2000.png) | ![Overview, mail2003 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/overview-mail2003.png) |
-| ![Inbox search, mail2000 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/search-mail2000.png) | ![Order mail, mail2003 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/order-mail2003.png) |
+Works with Python 3.11 to 3.14 and Django 5.2, 6.0 and 6.1.
 
 ## Quick start
 
-**1. Install** and add the app:
+The short version of the [Getting started](https://terminalkitten.github.io/django-postbox/getting-started/) tutorial.
+
+### 1. Install
 
 ```bash
 pip install django-postbox
 ```
 
+### 2. Add the app and send your mail through Postbox
+
+On **Django 6.1+**, with named mailers:
+
 ```python
 # settings.py
-INSTALLED_APPS = [..., "django_postbox"]
-```
 
-**2. Route your mail through postbox.** Django 6.1+:
+INSTALLED_APPS = [
+    # ...
+    "django_postbox",
+]
 
-```python
 MAILERS = {
     "default": {
         "BACKEND": "django_postbox.backends.EmailBackend",
-        "OPTIONS": {"forward_to": "console"},  # optional: also print every mail
+        # Optional: also print every mail in the terminal
+        "OPTIONS": {"forward_to": "console"},
     },
-    "console": {"BACKEND": "django.core.mail.backends.console.EmailBackend"},
+    "console": {
+        "BACKEND": "django.core.mail.backends.console.EmailBackend",
+    },
 }
 ```
 
-Django 5.2 / 6.0:
+On **Django 5.2 and 6.0**, replace `MAILERS` with:
 
 ```python
+# settings.py
+
 EMAIL_BACKEND = "django_postbox.backends.EmailBackend"
-POSTBOX_FORWARD_BACKEND = "django.core.mail.backends.console.EmailBackend"  # optional
+
+# Optional: also print every mail in the terminal
+POSTBOX_FORWARD_BACKEND = "django.core.mail.backends.console.EmailBackend"
 ```
 
-**3. Mount the inbox** in development:
+### 3. Add the inbox to your URLs
 
 ```python
 # urls.py
+
 from django.conf import settings
 from django.urls import include, path
+
+urlpatterns = [
+    # ...
+]
 
 if settings.DEBUG:
     urlpatterns += [path("dev/inbox/", include("django_postbox.urls"))]
 ```
 
-No login page yet? Add `LOGIN_URL = "admin:login"` to `settings.py`.
+> [!TIP]
+> The inbox is for staff only, so visitors go to your login page first. No login page yet? Add `LOGIN_URL = "admin:login"` to your settings to use the admin login. To let others in, see [Who can read the inbox](https://terminalkitten.github.io/django-postbox/guides/permissions/).
 
-**4. Migrate, create a staff user, send a mail and open the inbox:**
+### 4. Migrate and create a staff user
 
 ```bash
 python manage.py migrate
 python manage.py createsuperuser
-python manage.py shell -c "from django.core.mail import send_mail; send_mail('Hello', 'Hi Alice', 'me@example.com', ['alice@example.com'])"
+```
+
+### 5. Send a mail
+
+```bash
+python manage.py shell
+```
+
+```pycon
+>>> from django.core.mail import send_mail
+>>> send_mail("Hello", "Hi Alice", "me@example.com", ["alice@example.com"])
+1
+```
+
+### 6. Open the inbox
+
+```bash
 python manage.py runserver
 ```
 
-Open http://127.0.0.1:8000/dev/inbox/, log in, and `alice@example.com` is waiting.
+Go to http://127.0.0.1:8000/dev/inbox/, log in, and Alice's inbox is waiting for you.
 
-Optional: `POSTBOX_SKIP_DOMAINS = ["company.com"]` keeps your own domain out of the inbox, and `POSTBOX_THEME = "mail2000"` switches the look.
+## Themes
 
-The full documentation is in [`docs/`](docs/index.md) and builds with [dokk](https://pypi.org/project/dokk/): `make docs-serve`.
+Pick a default with `POSTBOX_THEME`, and everyone can choose their own under **Options** in the inbox. You can also [write your own theme](https://terminalkitten.github.io/django-postbox/guides/themes/#write-your-own-theme) in one CSS file.
+
+| `mail2003` (default) | `mail2000` |
+| --- | --- |
+| ![Inbox, mail2003 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-mail2003.png) | ![Inbox, mail2000 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-mail2000.png) |
+| **`mail2010`** | **`modern`** |
+| ![Inbox, mail2010 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-mail2010.png) | ![Inbox, modern theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-modern.png) |
+
+## Documentation
+
+The [documentation](https://terminalkitten.github.io/django-postbox/) walks you through everything beyond the quick start:
+
+- [Capture and forward](https://terminalkitten.github.io/django-postbox/guides/capture-and-forward/): print mail to the terminal, deliver for real and keep a copy, keep your own domain out of the inbox
+- [Who can read the inbox](https://terminalkitten.github.io/django-postbox/guides/permissions/): staff, a QA group, or everyone while debugging
+- [Where mail is kept](https://terminalkitten.github.io/django-postbox/guides/storages/): database, memory or a shared cache
+- [Themes](https://terminalkitten.github.io/django-postbox/guides/themes/): the four looks and writing your own
+- [How it works](https://terminalkitten.github.io/django-postbox/reference/how-it-works/): how mail is stored and shown safely
+- [Settings](https://terminalkitten.github.io/django-postbox/reference/settings/): every setting and when to change it
 
 ## Development
 
+See [Working on Postbox](https://terminalkitten.github.io/django-postbox/guides/development/) for the full guide.
+
 ```bash
 uv sync
-make migrate mail rs   # test project in tests/project, http://127.0.0.1:8000/dev/inbox/
-make lint              # ruff, ty, pytest
-uv run tox             # Python × Django matrix
+make migrate           # the test project in tests/project
+uv run python manage.py createsuperuser
+make mail              # send demo mail to ten random people
+make rs                # http://127.0.0.1:8000/dev/inbox/
+
+make lint              # ruff, ty and pytest
+uv run tox             # every Python and Django version
+make docs-serve        # the docs, reloading as you edit
+make screenshots       # rebuild docs/img in every theme
 make htmx              # update the bundled htmx
-make screenshots       # rebuild docs/img/*.png with headless Chrome
 ```

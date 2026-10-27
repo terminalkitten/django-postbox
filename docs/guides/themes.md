@@ -1,50 +1,95 @@
 ---
-title: Assets and templates
-description: The bundled htmx and CSS, and how to override them.
+title: Themes
+description: Pick one of four looks for the inbox, let everyone choose their own, or write a theme in one CSS file.
 sidebar:
   order: 4
 ---
 
-The pages load their assets through `{% postbox_assets %}`. All of them ship with the package, so nothing comes from a CDN and there is no build step:
+The inbox comes in four looks. They change nothing but the styling, so pick the one you like to look at all day.
 
-- `postbox/postbox.css`: layout and structure only, plus CSS variables with plain defaults
-- `postbox/themes/<POSTBOX_THEME>.css`: the look. Bundled: `mail2003` (default, webmail circa 2003), `mail2000` (classic 2000 desktop), `mail2010` (clean early-2010s webmail) and `modern` (rounded, light and dark mode)
-- `postbox/htmx.min.js`
+::::tabs{sync="theme"}
+:::tab[mail2003]
+::image[An inbox in the mail2003 theme]{src="../img/inbox-mail2003.png" caption="mail2003, the default: webmail around 2003, glossy blue bars on a warm tan."}
+:::
 
-## Themes
+:::tab[mail2000]
+::image[An inbox in the mail2000 theme]{src="../img/inbox-mail2000.png" caption="mail2000: a classic 2000 desktop, grey bevels and a navy title bar."}
+:::
 
-A theme is one stylesheet that overrides the variables from `postbox.css` (`--pb-bg`, `--pb-accent`, `--pb-font`, ...) and adds its own skin on top of the same class names. To add one, put `postbox/themes/<name>.css` in any static folder and set:
+:::tab[mail2010]
+::image[An inbox in the mail2010 theme]{src="../img/inbox-mail2010.png" caption="mail2010: clean early-2010s webmail, white and flat."}
+:::
 
-```python
-POSTBOX_THEME = "<name>"
+:::tab[modern]
+::image[An inbox in the modern theme]{src="../img/inbox-modern.png" caption="modern: rounded cards, and it follows your light or dark mode."}
+:::
+::::
+
+## Choose a theme
+
+Set the default for everyone:
+
+```python title="settings.py"
+POSTBOX_THEME = "mail2000"
 ```
 
-`POSTBOX_THEME = None` gives the plain base without a theme.
+Everyone can still pick their own under **Options**, top right in the inbox. That choice is kept in a cookie in their browser, so it sticks without touching your settings. The page is rendered with the right stylesheet from the start, so it never flashes in the wrong theme.
 
-Every viewer can pick their own theme under **Options** (top right). The choice is kept in a `postbox_theme` cookie, scoped to the inbox URL, and rendered server side in `<head>`, so pages never flash in the wrong theme. `POSTBOX_THEME` stays the default for everyone who has not chosen. The Options page also shows the Postbox, Django and Python versions and the storage in use.
+## Write your own theme
 
-| `mail2000` | `mail2003` |
-| --- | --- |
-| ![Overview, mail2000 theme](../img/overview-mail2000.png) | ![Overview, mail2003 theme](../img/overview-mail2003.png) |
-| **`mail2010`** | **`modern`** |
-| ![Inbox, mail2010 theme](../img/inbox-mail2010.png) | ![Inbox, modern theme](../img/inbox-modern.png) |
+A theme is a single CSS file. The base stylesheet takes care of the layout and exposes its colours and fonts as CSS variables, so a theme mostly sets those.
 
-## Screenshots
+::::steps
+1. **Add the file** to a static folder of one of your apps:
 
-`make screenshots` runs `scripts/screenshots.py`: it fills a throwaway in-memory database with the demo mails, renders every page in both themes and saves them with headless Chrome into `docs/img/`. It also copies the logo to `public/logo.svg` and `public/favicon.svg`, which dokk uses for the docs site. Set `CHROME=/path/to/chrome` if Chrome is not found.
+   :::filetree
+   - myapp/
+     - static/
+       - postbox/
+         - themes/
+           - **sunset.css** your theme
+   :::
 
-If your project already loads htmx, set `POSTBOX_LOAD_HTMX = False` and add it yourself in an overridden `postbox/base.html` (`{% block extra_head %}`).
+2. **Set the variables**, and add any extra styling you like on top of the `pb-` classes:
 
-## Updating htmx
+   ```css title="myapp/static/postbox/themes/sunset.css"
+   :root {
+     --pb-bg: #fff7ed;
+     --pb-surface: #ffffff;
+     --pb-text: #431407;
+     --pb-muted: #9a3412;
+     --pb-border: #fed7aa;
+     --pb-accent: #ea580c;
+     --pb-select: #ffedd5;
+     --pb-select-text: #431407;
+     --pb-font: Georgia, serif;
+   }
 
-```bash
-make htmx
+   .pb-header {
+     background: #ea580c;
+     color: #fff;
+   }
+   ```
+
+3. **Use it:**
+
+   ```python title="settings.py"
+   POSTBOX_THEME = "sunset"
+   ```
+
+   Your theme also shows up under Options, next to the bundled ones.
+::::
+
+:::tip
+The bundled themes in `django_postbox/static/postbox/themes/` are the best examples: copy one and start changing colours.
+:::
+
+`POSTBOX_THEME = None` turns themes off and leaves the plain base stylesheet.
+
+## Bring your own htmx
+
+The inbox uses a copy of [htmx](https://htmx.org) that ships with the package, so nothing loads from a CDN. If your project already loads htmx on every page, switch the bundled copy off and load yours in an overridden `postbox/base.html` (`{% block extra_head %}`):
+
+```python title="settings.py"
+POSTBOX_LOAD_HTMX = False
 ```
-
-This runs `scripts/update_htmx.py`, which downloads the latest htmx release from npm into `src/django_postbox/static/postbox/htmx.min.js`. Commit the result.
-
-## How the pages use htmx
-
-- `hx-boost` on the body makes links and forms swap the page without a reload.
-- The inbox list and the overview poll every five seconds and only swap themselves (`hx-select`).
-- The HTML body is rendered in `<iframe sandbox srcdoc>`: no scripts, and neither postbox's CSS nor the mail's CSS leaks across. A CSP in the mail's head only lets images, styles and fonts load, and links open in a new tab.
