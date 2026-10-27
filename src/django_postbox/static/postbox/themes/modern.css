@@ -1,4 +1,4 @@
-/* Theme: modern. Rounded cards, soft shadows, blue accents, light and dark */
+/* Theme: modern. Rounded cards, soft shadows, the logo's blue, light and dark */
 :root {
   --pb-bg: #f6f7f9;
   --pb-surface: #ffffff;
@@ -7,17 +7,17 @@
   --pb-muted: #6b7280;
   --pb-border: #e5e7eb;
   --pb-rule: #f0f1f3;
-  --pb-link: #1d4ed8;
-  --pb-accent: #2563eb;
-  --pb-accent-soft: #eff6ff;
-  --pb-select: #eff6ff;
+  --pb-link: #1a3fc4;
+  --pb-accent: #1a3fc4;
+  --pb-accent-soft: #eaeefb;
+  --pb-select: #eaeefb;
   --pb-select-text: #111827;
   --pb-hover: #f3f4f6;
   --pb-danger: #dc2626;
   --pb-radius: 10px;
   --pb-shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.08);
   --pb-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --pb-header-height: 56px;
+  --pb-header-height: 48px;
   --pb-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --pb-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   color-scheme: light dark;
@@ -32,10 +32,10 @@
     --pb-muted: #9ca3af;
     --pb-border: #262a33;
     --pb-rule: #20242c;
-    --pb-link: #93c5fd;
-    --pb-accent: #60a5fa;
-    --pb-accent-soft: #172554;
-    --pb-select: #172554;
+    --pb-link: #8ba3ff;
+    --pb-accent: #5f80ff;
+    --pb-accent-soft: #151f4d;
+    --pb-select: #151f4d;
     --pb-select-text: #e5e7eb;
     --pb-hover: #1d212a;
     --pb-danger: #f87171;
@@ -44,9 +44,9 @@
   }
 }
 
-body { font-size: 14px; }
+body { font-size: 13px; }
 
-/* Light top bar with a thin blue accent line */
+/* Light top bar with a thin line and the name in the logo's blue */
 .pb-header {
   background: var(--pb-surface);
   border-top: 3px solid var(--pb-accent);
@@ -54,17 +54,19 @@ body { font-size: 14px; }
   color: var(--pb-text);
 }
 .pb-header .pb-muted { color: var(--pb-muted); }
+/* "Postbox" in the logo's blue */
+.pb-header .pb-brand { color: var(--pb-accent); }
 .pb-brand { font-size: 17px; font-weight: 650; letter-spacing: -0.01em; }
 .pb-brand img { width: 28px; height: 28px; }
 
-.pb-main { padding: 16px; }
+.pb-main { padding: 12px; }
 .pb-card { border: 1px solid var(--pb-border); border-radius: var(--pb-radius); box-shadow: var(--pb-shadow); overflow: hidden; }
 
 .pb-bar,
-.pb-overview-header { background: var(--pb-surface); border-bottom-color: var(--pb-border); font-weight: 600; min-height: 44px; padding: 6px 12px; }
+.pb-overview-header { background: var(--pb-surface); border-bottom-color: var(--pb-border); font-weight: 600; min-height: 40px; padding: 4px 10px; }
 .pb-title { font-size: 15px; font-weight: 600; }
 
-.pb-row { padding: 10px 12px; border-bottom-color: var(--pb-rule); }
+.pb-row { padding: 6px 12px; border-bottom-color: var(--pb-rule); }
 .pb-address { font-weight: 500; }
 .pb-badge {
   min-width: 24px;
@@ -77,21 +79,21 @@ body { font-size: 14px; }
   text-align: center;
 }
 
-.pb-list-item { margin: 2px 6px; padding: 8px 10px; border: 0; border-radius: 8px; }
+.pb-list-item { margin: 1px 4px; padding: 5px 8px; border: 0; border-radius: 6px; line-height: 1.35; }
 .pb-list-item[aria-current] { box-shadow: inset 3px 0 var(--pb-accent); }
 
-/* Buttons in the shadcn/ui new-york style: 36px tall, 6px corners, a crisp small shadow */
+/* Buttons in the shadcn/ui new-york style, dense: 28px tall, 6px corners, a crisp small shadow */
 .pb-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 36px;
-  padding: 0 16px;
+  height: 28px;
+  padding: 0 10px;
   border: 1px solid var(--pb-border);
   border-radius: 6px;
   background: var(--pb-surface);
   color: var(--pb-text);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   line-height: 1;
   white-space: nowrap;
@@ -103,8 +105,8 @@ body { font-size: 14px; }
 .pb-button-danger { color: var(--pb-danger); }
 
 .pb-search {
-  height: 36px;
-  padding: 0 12px;
+  height: 28px;
+  padding: 0 9px;
   border: 1px solid var(--pb-border);
   border-radius: 6px;
   background: var(--pb-surface);
@@ -115,13 +117,13 @@ body { font-size: 14px; }
 
 .pb-pagination { padding: 10px; background: var(--pb-surface); border-top: 1px solid var(--pb-rule); }
 
-.pb-detail-header { padding: 16px; background: var(--pb-surface); border-bottom-color: var(--pb-border); }
-.pb-detail-header .pb-title { font-size: 20px; }
+.pb-detail-header { padding: 12px 14px; background: var(--pb-surface); border-bottom-color: var(--pb-border); }
+.pb-detail-header .pb-title { font-size: 17px; }
 .pb-meta dt { color: var(--pb-muted); font-weight: 500; }
 
 /* Segmented-control tabs */
-.pb-tabs { gap: 4px; padding: 10px 16px; background: var(--pb-surface); border-bottom-color: var(--pb-border); }
-.pb-tabs a { margin: 0; padding: 5px 12px; border: 0; border-radius: 999px; color: var(--pb-muted); font-weight: 500; }
+.pb-tabs { gap: 2px; padding: 6px 12px; background: var(--pb-surface); border-bottom-color: var(--pb-border); }
+.pb-tabs a { margin: 0; padding: 3px 10px; border: 0; border-radius: 999px; color: var(--pb-muted); font-weight: 500; }
 .pb-tabs a:hover { background: var(--pb-hover); color: var(--pb-text); }
 .pb-tabs a[aria-selected="true"] { background: var(--pb-accent-soft); color: var(--pb-accent); }
 
