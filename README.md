@@ -34,33 +34,61 @@ Supports Python 3.11–3.14 and Django 5.2, 6.0 and 6.1 (including the new `MAIL
 
 ## Quick start
 
-```python
-INSTALLED_APPS = [..., "django_postbox"]
+**1. Install** and add the app:
 
-# Django 6.1+
+```bash
+pip install django-postbox
+```
+
+```python
+# settings.py
+INSTALLED_APPS = [..., "django_postbox"]
+```
+
+**2. Route your mail through postbox.** Django 6.1+:
+
+```python
 MAILERS = {
     "default": {
         "BACKEND": "django_postbox.backends.EmailBackend",
-        "OPTIONS": {"forward_to": "console"},
+        "OPTIONS": {"forward_to": "console"},  # optional: also print every mail
     },
     "console": {"BACKEND": "django.core.mail.backends.console.EmailBackend"},
 }
-
-# Django 5.2 / 6.0
-EMAIL_BACKEND = "django_postbox.backends.EmailBackend"
-POSTBOX_FORWARD_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-POSTBOX_SKIP_DOMAINS = ["company.com"]
 ```
+
+Django 5.2 / 6.0:
+
+```python
+EMAIL_BACKEND = "django_postbox.backends.EmailBackend"
+POSTBOX_FORWARD_BACKEND = "django.core.mail.backends.console.EmailBackend"  # optional
+```
+
+**3. Mount the inbox** in development:
 
 ```python
 # urls.py
-urlpatterns += [path("dev/inbox/", include("django_postbox.urls"))]
+from django.conf import settings
+from django.urls import include, path
+
+if settings.DEBUG:
+    urlpatterns += [path("dev/inbox/", include("django_postbox.urls"))]
 ```
 
+No login page yet? Add `LOGIN_URL = "admin:login"` to `settings.py`.
+
+**4. Migrate, create a staff user, send a mail and open the inbox:**
+
 ```bash
-python manage.py migrate django_postbox
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py shell -c "from django.core.mail import send_mail; send_mail('Hello', 'Hi Alice', 'me@example.com', ['alice@example.com'])"
+python manage.py runserver
 ```
+
+Open http://127.0.0.1:8000/dev/inbox/, log in, and `alice@example.com` is waiting.
+
+Optional: `POSTBOX_SKIP_DOMAINS = ["company.com"]` keeps your own domain out of the inbox, and `POSTBOX_THEME = "mail2000"` switches the look.
 
 The full documentation is in [`docs/`](docs/index.md) and builds with [dokk](https://pypi.org/project/dokk/): `make docs-serve`.
 
