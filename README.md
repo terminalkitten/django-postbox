@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-mail2000.png" alt="An inbox with the newsletter mail open, mail2000 theme" width="800">
+  <img src="https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-modern.png" alt="An inbox with the newsletter mail open, modern theme" width="800">
 </p>
 
 Your project sends mail: password resets, invites, order confirmations. While you build them, you want to see them the way your users will, without anything leaving your laptop or test server.
@@ -132,11 +132,11 @@ Go to http://127.0.0.1:8000/dev/inbox/, log in, and Alice's inbox is waiting for
 
 Pick a default with `POSTBOX_THEME`, and everyone can choose their own under **Options** in the inbox. You can also [write your own theme](https://terminalkitten.github.io/django-postbox/guides/themes/#write-your-own-theme) in one CSS file.
 
-| `mail2003` (default) | `mail2000` |
+| `modern` (default) | `mail2003` |
 | --- | --- |
-| ![Inbox, mail2003 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-mail2003.png) | ![Inbox, mail2000 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-mail2000.png) |
-| **`mail2010`** | **`modern`** |
-| ![Inbox, mail2010 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-mail2010.png) | ![Inbox, modern theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-modern.png) |
+| ![Inbox, modern theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-modern.png) | ![Inbox, mail2003 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-mail2003.png) |
+| **`mail2000`** | **`mail2010`** |
+| ![Inbox, mail2000 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-mail2000.png) | ![Inbox, mail2010 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-mail2010.png) |
 
 ## Documentation
 

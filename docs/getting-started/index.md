@@ -97,7 +97,7 @@ In ten minutes you will send a mail from your project and read it in an inbox in
    Go to [http://127.0.0.1:8000/dev/inbox/](http://127.0.0.1:8000/dev/inbox/) and log in. Alice's inbox is waiting for you.
 :::::
 
-::image[The overview with an inbox per address]{src="../img/overview-mail2003.png" caption="Every address that received mail gets its own inbox."}
+::image[The overview with an inbox per address]{src="../img/overview-modern.png" caption="Every address that received mail gets its own inbox."}
 
 Leave the page open while you work: the overview and the inbox refresh every five seconds, so new mail shows up by itself.
 

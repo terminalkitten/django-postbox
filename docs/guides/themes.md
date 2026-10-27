@@ -8,8 +8,12 @@ sidebar:
 The inbox comes in four looks. They change nothing but the styling, so pick the one you like to look at all day.
 
 ::::tabs{sync="theme"}
+:::tab[modern]
+::image[An inbox in the modern theme]{src="../img/inbox-modern.png" caption="modern, the default: rounded cards with blue accents, following your light or dark mode."}
+:::
+
 :::tab[mail2003]
-::image[An inbox in the mail2003 theme]{src="../img/inbox-mail2003.png" caption="mail2003, the default: webmail around 2003, glossy blue bars on a warm tan."}
+::image[An inbox in the mail2003 theme]{src="../img/inbox-mail2003.png" caption="mail2003: webmail around 2003, glossy blue bars on a warm tan."}
 :::
 
 :::tab[mail2000]
@@ -20,9 +24,6 @@ The inbox comes in four looks. They change nothing but the styling, so pick the 
 ::image[An inbox in the mail2010 theme]{src="../img/inbox-mail2010.png" caption="mail2010: clean early-2010s webmail, white and flat."}
 :::
 
-:::tab[modern]
-::image[An inbox in the modern theme]{src="../img/inbox-modern.png" caption="modern: rounded cards, and it follows your light or dark mode."}
-:::
 ::::
 
 ## Choose a theme

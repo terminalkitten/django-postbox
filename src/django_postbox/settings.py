@@ -35,7 +35,7 @@ class PostboxSettings:
         ("django_postbox.permissions.IsStaff",)
     )
     POSTBOX_LOAD_HTMX: Setting[bool] = Setting(True)
-    POSTBOX_THEME: Setting[str | None] = Setting("mail2003")
+    POSTBOX_THEME: Setting[str | None] = Setting("modern")
 
 
 settings = PostboxSettings()

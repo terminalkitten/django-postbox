@@ -14,7 +14,7 @@ Every setting is optional. Postbox reads them each time it needs one, so `overri
 | `POSTBOX_PERMISSIONS` | `("django_postbox.permissions.IsStaff",)` | let other people read the inbox, see [Who can read the inbox](../guides/permissions.md) |
 | `POSTBOX_STORAGE` | `"django_postbox.storages.DatabaseStorage"` | keep mail in memory or a cache, see [Where mail is kept](../guides/storages.md) |
 | `POSTBOX_CACHE` | `"default"` | use another alias from `CACHES` for the cache storage |
-| `POSTBOX_THEME` | `"mail2003"` | start everyone on `"mail2000"`, `"mail2010"`, `"modern"` or your own theme, see [Themes](../guides/themes.md) |
+| `POSTBOX_THEME` | `"modern"` | start everyone on `"mail2003"`, `"mail2000"`, `"mail2010"` or your own theme, see [Themes](../guides/themes.md) |
 | `POSTBOX_LOAD_HTMX` | `True` | load your project's own htmx instead of the bundled copy |
 
 ## Mailer options

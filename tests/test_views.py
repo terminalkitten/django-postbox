@@ -68,11 +68,11 @@ def test_bundled_themes_exist(staff_client, storage, settings, theme):
     assert finders.find(f"postbox/themes/{theme}.css")
 
 
-def test_mail2003_is_the_default_theme(settings):
+def test_modern_is_the_default_theme(settings):
     from django_postbox.settings import PostboxSettings
 
     del settings.POSTBOX_THEME
-    assert PostboxSettings().POSTBOX_THEME == "mail2003"
+    assert PostboxSettings().POSTBOX_THEME == "modern"
 
 
 def test_overview_without_htmx_or_theme(staff_client, storage, settings):

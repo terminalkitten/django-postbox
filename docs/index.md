@@ -3,7 +3,7 @@ title: Django Postbox
 description: See every mail your Django project sends, in an inbox per address, without sending anything.
 ---
 
-::image[An inbox with the newsletter mail open, mail2000 theme]{src="img/inbox-mail2000.png"}
+::image[An inbox with the newsletter mail open, modern theme]{src="img/inbox-modern.png"}
 
 Your project sends mail: password resets, invites, order confirmations, weekly digests. While you build those, you want to see them the way your users will, without real mail leaving your laptop or a test server.
 

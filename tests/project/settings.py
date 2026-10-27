@@ -70,4 +70,3 @@ else:
     POSTBOX_FORWARD_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 POSTBOX_SKIP_DOMAINS = ["skip.example"]
-POSTBOX_THEME = "mail2000"

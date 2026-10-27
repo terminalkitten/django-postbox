@@ -8,10 +8,10 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
 
 BUNDLED_THEMES = {
+    "modern": "Modern",
     "mail2003": "Mail 2003",
     "mail2000": "Mail 2000",
     "mail2010": "Mail 2010",
-    "modern": "Modern",
 }
 COOKIE_NAME = "postbox_theme"
 
