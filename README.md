@@ -1,6 +1,20 @@
-# django-postbox
+<p align="center">
+  <a href="https://terminalkitten.github.io/django-postbox/">
+    <img src="https://raw.githubusercontent.com/terminalkitten/django-postbox/main/public/logo.svg" alt="Postbox logo" width="72" height="72">
+  </a>
+</p>
 
-Catch outgoing Django mail and browse it per address, like a real inbox.
+<h1 align="center">django-postbox</h1>
+
+<p align="center">
+  <strong>Catch outgoing Django mail and browse it per address, like a real inbox.</strong><br>
+  For local development and review apps: every mail your project sends lands in an inbox<br>
+  per recipient, with HTML, text, headers, raw source and attachments. No SMTP server needed.
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/inbox-mail2000.png" alt="An inbox with the newsletter mail open, mail2000 theme" width="800">
+</p>
 
 - **An inbox per address.** To, Cc and Bcc each get their own copy, browsable at `/dev/inbox/`.
 - **Stackable backend.** Capture, then forward to the next backend (console, SMTP, ...).
@@ -10,6 +24,13 @@ Catch outgoing Django mail and browse it per address, like a real inbox.
 - **htmx + hand-written CSS**, bundled, with no build step.
 
 Supports Python 3.11–3.14 and Django 5.2, 6.0 and 6.1 (including the new `MAILERS` setting).
+
+## Themes
+
+| `mail2000` | `mail2003` (default) |
+| --- | --- |
+| ![Overview, mail2000 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/overview-mail2000.png) | ![Overview, mail2003 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/overview-mail2003.png) |
+| ![Inbox search, mail2000 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/search-mail2000.png) | ![Order mail, mail2003 theme](https://raw.githubusercontent.com/terminalkitten/django-postbox/main/docs/img/order-mail2003.png) |
 
 ## Quick start
 
@@ -51,4 +72,5 @@ make migrate mail rs   # test project in tests/project, http://127.0.0.1:8000/de
 make lint              # ruff, ty, pytest
 uv run tox             # Python × Django matrix
 make htmx              # update the bundled htmx
+make screenshots       # rebuild docs/img/*.png with headless Chrome
 ```

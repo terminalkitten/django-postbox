@@ -21,6 +21,14 @@ POSTBOX_THEME = "<name>"
 
 `POSTBOX_THEME = None` gives the plain base without a theme.
 
+| `mail2000` | `mail2003` |
+| --- | --- |
+| ![Overview, mail2000 theme](../img/overview-mail2000.png) | ![Overview, mail2003 theme](../img/overview-mail2003.png) |
+
+## Screenshots
+
+`make screenshots` runs `scripts/screenshots.py`: it fills a throwaway in-memory database with the demo mails, renders every page in both themes and saves them with headless Chrome into `docs/img/`. It also copies the logo to `public/logo.svg` and `public/favicon.svg`, which dokk uses for the docs site. Set `CHROME=/path/to/chrome` if Chrome is not found.
+
 If your project already loads htmx, set `POSTBOX_LOAD_HTMX = False` and add it yourself in an overridden `postbox/base.html` (`{% block extra_head %}`).
 
 ## Updating htmx

@@ -13,4 +13,5 @@ make rs             # http://127.0.0.1:8000/dev/inbox/ (create a superuser first
 make lint           # ruff, ty and pytest
 uv run tox          # every supported Python and Django version
 make docs-serve     # these docs with live reload
+make screenshots    # rebuild the screenshots in docs/img with headless Chrome
 ```
