@@ -179,12 +179,15 @@ input:focus-visible { outline: 2px solid var(--pb-accent); outline-offset: -2px;
 .pb-dialog-buttons { display: flex; justify-content: flex-end; gap: 6px; padding: 0 12px 12px; }
 .pb-dialog-buttons .pb-button { min-width: 75px; text-align: center; }
 
+/* Mobile: the same fixed shell as desktop, the list stacked above the viewer.
+   Only the list and the viewer scroll, never the page. */
 @media (max-width: 720px) {
-  html, body { height: auto; }
-  .pb-main { overflow: visible; }
-  .pb-inbox { grid-template-columns: 1fr; grid-template-rows: none; height: auto; }
-  .pb-tab-panel { max-height: 70vh; }
-  .pb-list { max-height: 40vh; }
-  .pb-frame { height: 70vh; }
+  /* The header wraps instead of pushing the page wider than the screen */
+  .pb-header { flex-wrap: wrap; gap: 8px; height: auto; min-height: var(--pb-header-height); padding-block: 6px; }
+  /* Shown in the status bar already */
+  .pb-header .pb-muted, .pb-brand small, .pb-status .pb-status-extra { display: none; }
+  .pb-overview-header { flex-wrap: wrap; }
+  .pb-overview-header form, .pb-search { flex: 1 1 100%; width: 100%; }
+  .pb-inbox { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) minmax(0, 2fr); }
 }
 }

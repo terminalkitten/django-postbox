@@ -18,8 +18,8 @@
   {# Swapped out of band with every htmx update, so it always matches the page #}
   <footer id="status" class="pb-status">
     {% block status %}<span>Ready</span>{% endblock %}
-    <span>Storage: {{ storage_label }}</span>
-    {% block status_refresh %}<span>Auto-refresh: 5s</span>{% endblock %}
+    <span class="pb-status-extra">Storage: {{ storage_label }}</span>
+    {% block status_refresh %}<span class="pb-status-extra">Auto-refresh: 5s</span>{% endblock %}
   </footer>
 </body>
 </html>
