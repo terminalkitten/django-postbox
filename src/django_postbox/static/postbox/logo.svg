@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Postbox butterfly: four glossy wings and a body -->
+  <defs>
+    <radialGradient id="violet" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#b394f2"/><stop offset="1" stop-color="#6a3fc8"/>
+    </radialGradient>
+    <radialGradient id="raspberry" cx=".65" cy=".3" r=".8">
+      <stop offset="0" stop-color="#f58ab4"/><stop offset="1" stop-color="#d12a6c"/>
+    </radialGradient>
+    <radialGradient id="teal" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#6fdbe6"/><stop offset="1" stop-color="#0e93a5"/>
+    </radialGradient>
+    <radialGradient id="gold" cx=".65" cy=".3" r=".8">
+      <stop offset="0" stop-color="#ffdd73"/><stop offset="1" stop-color="#e59a00"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="9.5" cy="10.5" rx="7" ry="5.5" transform="rotate(-35 9.5 10.5)" fill="url(#violet)"/>
+  <ellipse cx="22.5" cy="10.5" rx="7" ry="5.5" transform="rotate(35 22.5 10.5)" fill="url(#raspberry)"/>
+  <ellipse cx="11" cy="21.5" rx="5" ry="4" transform="rotate(30 11 21.5)" fill="url(#teal)"/>
+  <ellipse cx="21" cy="21.5" rx="5" ry="4" transform="rotate(-30 21 21.5)" fill="url(#gold)"/>
+  <rect x="15" y="8" width="2" height="18" rx="1" fill="#1f2a44"/>
+</svg>

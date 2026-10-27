@@ -1,0 +1,177 @@
+/*
+ * django-postbox base: layout and structure only, no build step.
+ * The look lives in themes/<POSTBOX_THEME>.css, which overrides these variables
+ * and adds its own skin on top of the same class names.
+ */
+:root {
+  --pb-bg: #ffffff;
+  --pb-surface: #ffffff;
+  --pb-panel: #f5f5f5;
+  --pb-text: #111111;
+  --pb-muted: #666666;
+  --pb-border: #cccccc;
+  --pb-rule: #e5e5e5;
+  --pb-link: #0645ad;
+  --pb-accent: #0645ad;
+  --pb-select: #0645ad;
+  --pb-select-text: #ffffff;
+  --pb-hover: #f0f0f0;
+  --pb-danger: #cc0000;
+  --pb-header-height: 44px;
+  --pb-font: system-ui, sans-serif;
+  --pb-mono: ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  background: var(--pb-bg);
+  color: var(--pb-text);
+  font: 14px/1.45 var(--pb-font);
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* Keyboard focus, visible on every theme (themes may restyle, never remove) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible { outline: 2px solid var(--pb-accent); outline-offset: -2px; }
+
+.pb-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: var(--pb-header-height);
+  padding: 0 10px;
+}
+.pb-header form { margin-left: auto; }
+
+.pb-brand { display: flex; align-items: center; gap: 6px; font-weight: bold; }
+.pb-brand img { width: 32px; height: 32px; }
+
+.pb-main { flex: 1; min-height: 0; overflow: auto; padding: 10px; }
+
+.pb-status {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-top: 1px solid var(--pb-border);
+  background: var(--pb-panel);
+  color: var(--pb-muted);
+  white-space: nowrap;
+}
+.pb-status span { padding: 1px 8px; overflow: hidden; text-overflow: ellipsis; }
+.pb-status .pb-status-main { flex: 1; color: var(--pb-text); }
+
+.pb-card { background: var(--pb-surface); border: 1px solid var(--pb-border); }
+
+.pb-bar,
+.pb-overview-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  padding: 3px 8px;
+  border-bottom: 1px solid var(--pb-border);
+}
+.pb-title { margin: 0; font-size: 1em; font-weight: bold; }
+.pb-overview { max-width: 760px; margin: 0 auto; }
+.pb-overview-header form { margin-left: auto; }
+
+.pb-muted { color: var(--pb-muted); }
+.pb-empty { color: var(--pb-muted); text-align: center; padding: 24px 10px; margin: 0; }
+
+.pb-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--pb-rule);
+}
+.pb-row:hover { background: var(--pb-hover); }
+.pb-address { flex: 1; color: var(--pb-link); overflow-wrap: anywhere; }
+
+.pb-button {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1px solid var(--pb-border);
+  background: var(--pb-surface);
+  color: var(--pb-text);
+  font: inherit;
+  cursor: pointer;
+}
+.pb-button-danger { color: var(--pb-danger); }
+
+.pb-search {
+  width: 200px;
+  max-width: 100%;
+  padding: 2px 4px;
+  border: 1px solid var(--pb-border);
+  font: inherit;
+}
+
+.pb-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 6px;
+}
+
+/* Inbox: list left, message right */
+.pb-inbox {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) 1fr;
+  /* minmax(0, ...) lets the panes scroll instead of a long mail stretching the row */
+  grid-template-rows: minmax(0, 1fr);
+  gap: 10px;
+  height: 100%;
+}
+
+.pb-list { display: flex; flex-direction: column; min-height: 0; }
+.pb-list .pb-search { flex: 1; width: auto; min-width: 0; }
+.pb-list-scroll { flex: 1; min-height: 0; overflow-y: auto; }
+.pb-list-item {
+  display: grid;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--pb-rule);
+}
+.pb-list-item:hover { background: var(--pb-hover); }
+.pb-list-item[aria-current] { background: var(--pb-select); color: var(--pb-select-text); }
+.pb-list-item[aria-current] .pb-muted { color: inherit; opacity: 0.85; }
+.pb-list-subject { font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.pb-detail { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.pb-detail-header { padding: 8px 10px; border-bottom: 1px solid var(--pb-border); }
+.pb-detail-header .pb-title { font-size: 1.25em; margin-bottom: 6px; }
+
+.pb-meta { display: grid; grid-template-columns: max-content 1fr; gap: 1px 8px; margin: 0; }
+.pb-meta dt { font-weight: bold; }
+.pb-meta dd { margin: 0; overflow-wrap: anywhere; }
+.pb-headers { padding: 10px; font-family: var(--pb-mono); }
+
+.pb-actions { display: flex; gap: 6px; margin-top: 8px; }
+.pb-actions form { margin: 0; }
+
+.pb-tabs { display: flex; gap: 2px; padding: 6px 8px 0; border-bottom: 1px solid var(--pb-border); }
+.pb-tabs a { margin-bottom: -1px; padding: 3px 10px; border: 1px solid transparent; }
+.pb-tabs a[aria-selected="true"] { border-color: var(--pb-border); border-bottom-color: var(--pb-surface); background: var(--pb-surface); }
+
+.pb-tab-panel { flex: 1; overflow: auto; min-height: 0; }
+.pb-tab-panel > .pb-row { color: var(--pb-link); }
+.pb-frame { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
+.pb-pre { margin: 0; padding: 10px; font-family: var(--pb-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+@media (max-width: 720px) {
+  html, body { height: auto; }
+  .pb-main { overflow: visible; }
+  .pb-inbox { grid-template-columns: 1fr; grid-template-rows: none; height: auto; }
+  .pb-tab-panel { max-height: 70vh; }
+  .pb-list { max-height: 40vh; }
+  .pb-frame { height: 70vh; }
+}
