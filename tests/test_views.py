@@ -254,3 +254,53 @@ def test_clear_inbox_and_all(staff_client, storage, message):
     assert [m.recipient for m in storage.messages()] == ["bob@example.com"]
     staff_client.post(reverse("postbox:clear_all"))
     assert storage.messages() == []
+
+
+def test_settings_page_shows_versions_and_themes(staff_client, storage):
+    response = staff_client.get(reverse("postbox:settings"), {"next": "/dev/inbox/"})
+    content = response.content.decode()
+    assert response.status_code == 200
+    assert "About Postbox" in content
+    assert response.context["django_version"] in content
+    assert set(response.context["themes"]) >= {"mail2003", "mail2000"}
+    assert response.context["next_url"] == "/dev/inbox/"
+
+
+def test_settings_requires_permission(client, db):
+    assert client.get(reverse("postbox:settings")).status_code == 302
+
+
+def test_choosing_a_theme_sets_cookie_and_renders_it(staff_client, storage, settings):
+    settings.POSTBOX_THEME = "mail2003"
+    response = staff_client.post(
+        reverse("postbox:settings"), {"theme": "mail2000", "next": "/dev/inbox/"}
+    )
+    assert response.status_code == 302
+    assert response.url == "/dev/inbox/"
+    cookie = response.cookies["postbox_theme"]
+    assert cookie.value == "mail2000"
+    assert cookie["path"] == reverse("postbox:overview")
+
+    content = staff_client.get(reverse("postbox:overview")).content.decode()
+    assert "themes/mail2000.css" in content
+    assert "themes/mail2003.css" not in content
+
+
+def test_unknown_theme_is_ignored(staff_client, storage, settings):
+    settings.POSTBOX_THEME = "mail2003"
+    response = staff_client.post(reverse("postbox:settings"), {"theme": "../../evil"})
+    assert "postbox_theme" not in response.cookies
+
+    staff_client.cookies["postbox_theme"] = "../../evil"
+    content = staff_client.get(reverse("postbox:overview")).content.decode()
+    assert "themes/mail2003.css" in content
+    assert "evil" not in content
+
+
+def test_settings_never_redirects_off_site(staff_client, storage):
+    response = staff_client.post(
+        reverse("postbox:settings"),
+        {"theme": "mail2003", "next": "https://evil.example/"},
+    )
+    assert response.url == reverse("postbox:overview")
+

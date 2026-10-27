@@ -99,3 +99,7 @@ body { font-size: 11px; }
   color: #0b3a8c;
 }
 .pb-status span + span { border-left: 1px solid var(--pb-border); }
+
+/* Options dialog */
+.pb-dialog fieldset { border-color: var(--pb-rule); background: var(--pb-panel); }
+.pb-dialog legend { color: #0b3a8c; font-weight: bold; }

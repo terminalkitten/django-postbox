@@ -50,6 +50,8 @@ input:focus-visible { outline: 2px solid var(--pb-accent); outline-offset: -2px;
   padding: 0 10px;
 }
 .pb-header form { margin-left: auto; }
+.pb-options { margin-left: auto; }
+.pb-header form + .pb-options { margin-left: 0; }
 
 .pb-brand { display: flex; align-items: center; gap: 6px; font-weight: bold; }
 .pb-brand img { width: 32px; height: 32px; }
@@ -167,6 +169,16 @@ input:focus-visible { outline: 2px solid var(--pb-accent); outline-offset: -2px;
 .pb-frame { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
 .pb-pre { margin: 0; padding: 10px; font-family: var(--pb-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
 
+/* Options dialog */
+.pb-dialog { max-width: 460px; margin: 24px auto; }
+.pb-dialog-body { display: grid; gap: 10px; padding: 10px 12px; }
+.pb-dialog fieldset { margin: 0; padding: 6px 10px 10px; border: 1px solid var(--pb-border); }
+.pb-dialog legend { padding: 0 4px; }
+.pb-radio { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+.pb-about { display: flex; align-items: flex-start; gap: 12px; }
+.pb-dialog-buttons { display: flex; justify-content: flex-end; gap: 6px; padding: 0 12px 12px; }
+.pb-dialog-buttons .pb-button { min-width: 75px; text-align: center; }
+
 @media (max-width: 720px) {
   html, body { height: auto; }
   .pb-main { overflow: visible; }
@@ -174,4 +186,5 @@ input:focus-visible { outline: 2px solid var(--pb-accent); outline-offset: -2px;
   .pb-tab-panel { max-height: 70vh; }
   .pb-list { max-height: 40vh; }
   .pb-frame { height: 70vh; }
+}
 }

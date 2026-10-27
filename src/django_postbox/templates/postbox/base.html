@@ -12,13 +12,14 @@
   <header class="pb-header">
     <a class="pb-brand" href="{% url 'postbox:overview' %}"><img src="{% static 'postbox/logo.svg' %}" alt="">Postbox<small>Mail</small></a>
     {% block header_extra %}{% endblock %}
+    <a class="pb-button pb-options" href="{% url 'postbox:settings' %}?next={{ request.path|urlencode }}">Options</a>
   </header>
   <main class="pb-main">{% block content %}{% endblock %}</main>
   {# Swapped out of band with every htmx update, so it always matches the page #}
   <footer id="status" class="pb-status">
     {% block status %}<span>Ready</span>{% endblock %}
     <span>Storage: {{ storage_label }}</span>
-    <span>Auto-refresh: 5s</span>
+    {% block status_refresh %}<span>Auto-refresh: 5s</span>{% endblock %}
   </footer>
 </body>
 </html>

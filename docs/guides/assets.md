@@ -21,6 +21,8 @@ POSTBOX_THEME = "<name>"
 
 `POSTBOX_THEME = None` gives the plain base without a theme.
 
+Every viewer can pick their own theme under **Options** (top right). The choice is kept in a `postbox_theme` cookie, scoped to the inbox URL, and rendered server side in `<head>`, so pages never flash in the wrong theme. `POSTBOX_THEME` stays the default for everyone who has not chosen. The Options page also shows the Postbox, Django and Python versions and the storage in use.
+
 | `mail2000` | `mail2003` |
 | --- | --- |
 | ![Overview, mail2000 theme](../img/overview-mail2000.png) | ![Overview, mail2003 theme](../img/overview-mail2003.png) |

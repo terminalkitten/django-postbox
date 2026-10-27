@@ -117,3 +117,13 @@ a:focus-visible, button:focus-visible { outline: 1px dotted #000; outline-offset
 /* classic status bar with sunken panels */
 .pb-status { border-top: 1px solid #fff; background: var(--pb-panel); color: #000; padding: 2px 2px 3px; }
 .pb-status span { box-shadow: inset -1px -1px #fff, inset 1px 1px #808080; }
+
+/* Options dialog: a raised window with a navy title bar and etched group boxes */
+.pb-dialog { padding: 3px; background: var(--pb-panel); box-shadow: var(--pb-raised); }
+.pb-dialog .pb-bar {
+  background: linear-gradient(90deg, #0a246a, #a6caf0);
+  box-shadow: none;
+  color: #fff;
+}
+.pb-dialog .pb-title { font-weight: bold; }
+.pb-dialog fieldset { border: 1px solid #808080; box-shadow: 1px 1px #fff, inset 1px 1px #fff; }

@@ -1,18 +1,24 @@
 from __future__ import annotations
 
+import platform
+from importlib.metadata import PackageNotFoundError, version
 from typing import TYPE_CHECKING, Any
 
+import django
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.paginator import Paginator
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.functional import cached_property
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.module_loading import import_string
 from django.views import View
 from django.views.generic import TemplateView
 
 from django_postbox.settings import settings
 from django_postbox.storages import get_storage
+from django_postbox.themes import COOKIE_NAME, available_themes, get_theme
 
 if TYPE_CHECKING:
     import uuid
@@ -197,3 +203,45 @@ class ClearView(PermissionMixin, View):
     def post(self, request: HttpRequest, hash: str | None = None) -> HttpResponse:
         get_storage().clear(hash)
         return redirect("postbox:overview")
+
+
+class SettingsView(PermissionMixin, TemplateView):
+    """Options dialog: pick a theme (kept in a cookie) and see versions"""
+
+    template_name = "postbox/settings.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        try:
+            postbox_version = version("django-postbox")
+        except PackageNotFoundError:
+            postbox_version = "dev"
+        return super().get_context_data(
+            next_url=self.safe_next(self.request.GET.get("next")),
+            themes=available_themes(),
+            current_theme=get_theme(self.request),
+            postbox_version=postbox_version,
+            django_version=django.get_version(),
+            python_version=platform.python_version(),
+            storage_label=get_storage().label,
+            **kwargs,
+        )
+
+    def safe_next(self, url: str | None) -> str:
+        """Only redirect back into this site, never to another host"""
+        if url and url_has_allowed_host_and_scheme(
+            url, allowed_hosts={self.request.get_host()}
+        ):
+            return url
+        return reverse("postbox:overview")
+
+    def post(self, request: HttpRequest) -> HttpResponse:
+        response = redirect(self.safe_next(request.POST.get("next")))
+        if (theme := request.POST.get("theme")) in available_themes():
+            response.set_cookie(
+                COOKIE_NAME,
+                theme,
+                max_age=60 * 60 * 24 * 365,
+                path=reverse("postbox:overview"),
+                samesite="Lax",
+            )
+        return response

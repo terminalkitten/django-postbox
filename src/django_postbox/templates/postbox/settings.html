@@ -1,0 +1,43 @@
+{% extends "postbox/base.html" %}
+{% load static %}
+
+{% block title %}Options · Postbox{% endblock %}
+
+{% block status %}<span class="pb-status-main">Options</span>{% endblock %}
+{% block status_refresh %}{% endblock %}
+
+{% block content %}
+  {# A full page load (no hx-boost): the new theme stylesheet must land in <head> #}
+  <form class="pb-card pb-dialog" method="post" hx-boost="false">
+    {% csrf_token %}
+    <div class="pb-bar"><span class="pb-title">Options</span></div>
+    <div class="pb-dialog-body">
+      <fieldset>
+        <legend>Appearance</legend>
+        {% for name, label in themes.items %}
+          <label class="pb-radio">
+            <input type="radio" name="theme" value="{{ name }}"{% if name == current_theme %} checked{% endif %}>
+            {{ label }}
+          </label>
+        {% endfor %}
+      </fieldset>
+      <fieldset>
+        <legend>About Postbox</legend>
+        <div class="pb-about">
+          <img src="{% static 'postbox/logo.svg' %}" alt="" width="48" height="48">
+          <dl class="pb-meta">
+            <dt>Postbox</dt><dd>Version {{ postbox_version }}</dd>
+            <dt>Django</dt><dd>{{ django_version }}</dd>
+            <dt>Python</dt><dd>{{ python_version }}</dd>
+            <dt>Storage</dt><dd>{{ storage_label }}</dd>
+          </dl>
+        </div>
+      </fieldset>
+    </div>
+    <div class="pb-dialog-buttons">
+      <button class="pb-button" name="next" value="{{ next_url }}">OK</button>
+      <a class="pb-button" href="{{ next_url }}">Cancel</a>
+      <button class="pb-button" name="next" value="{{ request.get_full_path }}">Apply</button>
+    </div>
+  </form>
+{% endblock %}
