@@ -24,7 +24,7 @@
         {# Outside the swapped list, so the input keeps focus while typing #}
         <input class="pb-search" type="search" name="q" value="{{ query }}" placeholder="Search mail" aria-label="Search mail"
                hx-get="{% url 'postbox:inbox' hash %}" hx-trigger="input changed delay:300ms, search"
-               hx-target="#message-items" hx-select="#message-items" hx-select-oob="#status" hx-swap="outerHTML" hx-push-url="true">
+               hx-target="#message-items" hx-select="#message-items" hx-select-oob="#message-items,#status" hx-swap="outerHTML" hx-push-url="true">
       </div>
       {# The scroll container is never swapped, so its scroll position stays #}
       <div class="pb-list-scroll">
@@ -32,7 +32,9 @@
       {% include "postbox/_poller.html" with target="#message-items" oob="#status,#message-count" %}
       {% for item in messages %}
         <a class="pb-list-item" href="{% url 'postbox:message' item.hash item.id %}{% if query %}?q={{ query|urlencode }}{% endif %}"
-           hx-target="#detail" hx-select="#detail" hx-swap="outerHTML" hx-select-oob="#message-items,#status"
+           hx-target="#detail" hx-select="#detail" hx-select-oob="#message-items,#status"
+           {# show:none: htmx scrolls a boosted target into view by default, which reset the list #}
+           hx-swap="outerHTML show:none"
            {% if item.id == message.id %}aria-current="page"{% endif %}>
           <span class="pb-list-subject">{{ item.subject|default:"(no subject)" }}</span>
           <span class="pb-muted">{{ item.sender }}</span>
@@ -41,6 +43,19 @@
       {% empty %}
         <p class="pb-empty">No mail matches “{{ query }}”.</p>
       {% endfor %}
+      {# Keep the open mail in sight, also after a reload or a direct link #}
+      <script>
+        (() => {
+          const reveal = () => {
+            const open = document.querySelector("#message-items [aria-current]")
+            const list = open?.closest(".pb-list-scroll")
+            if (!list) return
+            const item = open.getBoundingClientRect(), box = list.getBoundingClientRect()
+            if (item.top < box.top || item.bottom > box.bottom) open.scrollIntoView({block: "center"})
+          }
+          document.readyState === "loading" ? addEventListener("DOMContentLoaded", reveal) : reveal()
+        })()
+      </script>
       </div>
       </div>
     </nav>
@@ -64,7 +79,7 @@
 
         <div class="pb-tabs" role="tablist">
           {% for name in tabs %}
-            <a role="tab" href="{% querystring tab=name %}" hx-target="#detail" hx-select="#detail" hx-select-oob="#status" hx-swap="outerHTML"{% if name == tab %} aria-selected="true"{% endif %}>
+            <a role="tab" href="{% querystring tab=name %}" hx-target="#detail" hx-select="#detail" hx-select-oob="#message-items,#status" hx-swap="outerHTML"{% if name == tab %} aria-selected="true"{% endif %}>
               {% if name == "html" %}HTML{% else %}{{ name|capfirst }}{% endif %}{% if name == "attachments" %} ({{ message.attachments|length }}){% endif %}
             </a>
           {% endfor %}
