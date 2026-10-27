@@ -11,7 +11,7 @@ shell:
 	uv run python manage.py shell
 
 mail:
-	uv run python manage.py send_test_mails --bulk 30
+	uv run python manage.py send_test_mails
 
 htmx:
 	uv run python scripts/update_htmx.py

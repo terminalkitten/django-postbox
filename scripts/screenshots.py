@@ -10,6 +10,7 @@ db/postbox.db is never touched. Set CHROME to the browser binary if it is not fo
 from __future__ import annotations
 
 import os
+import random
 import shutil
 import subprocess
 import sys
@@ -59,13 +60,13 @@ def render_pages() -> dict[str, str]:
 
     from django_postbox.backends import EmailBackend
     from django_postbox.storages import get_storage, hash_address
-    from tests.project.management.commands.send_test_mails import build, demo_mails
+    from tests.project.management.commands.send_test_mails import (
+        demo_mails,
+        random_mails,
+    )
 
-    bulk = [
-        build(f"Bulk mail {number}", [f"user{number:03d}@example.com"], "Bulk mail.")
-        for number in range(1, 13)
-    ]
-    EmailBackend().send_messages(bulk + demo_mails())  # real people on top
+    # Random people first (fixed seed for stable images), so the real ones are on top
+    EmailBackend().send_messages(random_mails(10, random.Random(42)) + demo_mails())
 
     client = Client()
     client.force_login(User.objects.create(username="docs", is_staff=True))

@@ -1,4 +1,5 @@
 import base64
+import random
 from typing import Any
 
 from django.core.mail import EmailMultiAlternatives
@@ -230,25 +231,200 @@ def demo_mails() -> list[EmailMultiAlternatives]:
     ]
 
 
+FIRST_NAMES = (
+    "Ella",
+    "Noah",
+    "Mila",
+    "Sem",
+    "Julia",
+    "Daan",
+    "Tess",
+    "Finn",
+    "Sara",
+    "Lucas",
+    "Emma",
+    "Levi",
+    "Nora",
+    "Bram",
+    "Lotte",
+    "Jesse",
+    "Fenna",
+    "Thijs",
+    "Isa",
+    "Ruben",
+)
+LAST_NAMES = (
+    "Dekker",
+    "Visser",
+    "Bakker",
+    "Jansen",
+    "de Vries",
+    "Smit",
+    "Meijer",
+    "Mulder",
+    "Bos",
+    "Vos",
+    "Peters",
+    "Hendriks",
+    "van Dijk",
+    "Kok",
+    "Brouwer",
+)
+CITIES = ("Amsterdam", "Utrecht", "Berlin", "Lisbon", "Oslo", "Madrid", "Prague")
+PRODUCTS = (
+    "Django mug",
+    "Pony sticker pack",
+    "Keyboard",
+    "Desk lamp",
+    "Notebook",
+    "Hoodie",
+)
+DOCUMENTS = ("Q3 roadmap", "Release checklist", "Budget 2027", "Onboarding guide")
+TOPICS = ("Sprint review", "1:1", "Architecture sync", "Retro", "Customer call")
+
+
+def random_person(rng: random.Random) -> tuple[str, str]:
+    first, last = rng.choice(FIRST_NAMES), rng.choice(LAST_NAMES)
+    return f"{first} {last}", f"{first}.{last.replace(' ', '')}@example.com".lower()
+
+
+def random_mail(
+    name: str, address: str, colleagues: list[str], rng: random.Random
+) -> EmailMultiAlternatives:
+    """One realistic mail for this person, with random details"""
+    first = name.split()[0]
+    number = rng.randint(10000, 99999)
+    amount = f"{rng.randint(5, 400)},{rng.randint(0, 99):02d}"
+    kind = rng.randrange(12)
+    if kind == 0:
+        items = rng.sample(PRODUCTS, rng.randint(1, 3))
+        rows = "".join(f"<li>{item}</li>" for item in items)
+        return build(
+            f"Your order #{number} has shipped",
+            [address],
+            f"Hi {first}, order #{number} ({', '.join(items)}) is on its way. Total EUR {amount}.",
+            f"<h2 style='color:#2253c3'>On its way, {first}!</h2><ul>{rows}</ul><p>Total <b>&euro; {amount}</b></p>",
+            from_email="Shop <orders@shop.example>",
+        )
+    if kind == 1:
+        return build(
+            f"Invoice INV-{number}",
+            [address],
+            f"Dear {name},\n\nAttached is invoice INV-{number} for EUR {amount}.",
+            attachments=((f"INV-{number}.pdf", TINY_PDF, "application/pdf"),),
+            from_email="Billing <billing@example.com>",
+        )
+    if kind == 2:
+        return build(
+            "Reset your password",
+            [address],
+            f"Hi {first}, reset your password: https://example.com/reset/{number:x}/",
+            f"<p>Hi {first},</p><p><a href='https://example.com/reset/{number:x}/'>Reset your password</a></p>",
+        )
+    if kind == 3:
+        city = rng.choice(CITIES)
+        return build(
+            f"New sign-in from {city}",
+            [address],
+            f"New sign-in to your account from {city}. Not you? Secure your account.",
+            f"<div style='border-left:4px solid #d13438;padding:8px 16px'><b>New sign-in</b><p>{city} · {rng.choice(('Windows', 'macOS', 'iPhone', 'Android'))}</p></div>",
+            from_email="Account Security <security@example.com>",
+        )
+    if kind == 4:
+        topic = rng.choice(TOPICS)
+        day = rng.choice(("Mon", "Tue", "Wed", "Thu", "Fri"))
+        return build(
+            f"Invitation: {topic} @ {day} {rng.randint(9, 16)}:00",
+            [address],
+            f"You are invited to {topic} on {day}.",
+            attachments=(("invite.ics", INVITE_ICS, "text/calendar"),),
+            cc=rng.sample(colleagues, min(2, len(colleagues))),
+            from_email="Calendar <calendar@example.com>",
+        )
+    if kind == 5:
+        who = rng.choice(colleagues)
+        return build(
+            f"{who.split('@')[0].split('.')[0].title()} commented on your post",
+            [address],
+            f"{who} wrote: Nice work, {first}! Can we ship this today?",
+            from_email="Notifications <notify@example.com>",
+        )
+    if kind == 6:
+        return build(
+            f"The Weekly Pony #{rng.randint(1, 99)}",
+            [address],
+            "This week: Django 6.1, MAILERS and more.",
+            NEWSLETTER_HTML,
+            from_email="The Weekly Pony <news@pony.example>",
+        )
+    if kind == 7:
+        return build(
+            f"Re: [Ticket #{number}] Can't log in",
+            [address],
+            f"Hi {first},\n\nWe reset your session, please try again.\n\n> I can't log in since this morning.",
+            from_email="Support <support@example.com>",
+            headers={"In-Reply-To": f"<ticket-{number}@example.com>"},
+        )
+    if kind == 8:
+        return build(
+            "Payment failed",
+            [address],
+            f"We could not charge EUR {amount}. Please update your card.",
+            f"<p style='color:#a4262c'><b>Payment of &euro; {amount} failed.</b></p><p><a href='https://example.com/billing'>Update your card</a></p>",
+            from_email="Billing <billing@example.com>",
+        )
+    if kind == 9:
+        document = rng.choice(DOCUMENTS)
+        return build(
+            f"{rng.choice(colleagues).split('.')[0].title()} shared \"{document}\" with you",
+            [address],
+            f"Open {document}: https://docs.example.com/{number}",
+            from_email="Docs <docs@example.com>",
+        )
+    if kind == 10:
+        rows = "\n".join(
+            f"{day}  {rng.randint(0, 40):>3} tickets  {rng.randint(60, 100)}% SLA"
+            for day in ("Mon", "Tue", "Wed", "Thu", "Fri")
+        )
+        return build(f"Weekly report {rng.randint(1, 52)}", [address], rows)
+    return build(
+        f"Welcome aboard, {first}!",
+        [address],
+        f"Hi {first}, welcome! Your first week starts with a codebase tour.",
+        f"<h2>Welcome aboard, {first}! 🎉</h2><p>Your first week starts with a codebase tour.</p>",
+        from_email="People Team <people@example.com>",
+    )
+
+
+def random_mails(users: int, rng: random.Random) -> list[EmailMultiAlternatives]:
+    """20 to 30 random mails for each of `users` random people"""
+    people: dict[str, str] = {}  # address -> name, exactly `users` unique people
+    while len(people) < min(users, len(FIRST_NAMES) * len(LAST_NAMES)):
+        name, address = random_person(rng)
+        people[address] = name
+    mails = []
+    for address, name in people.items():
+        colleagues = [other for other in people if other != address] or [address]
+        mails += [
+            random_mail(name, address, colleagues, rng)
+            for _ in range(rng.randint(20, 30))
+        ]
+    rng.shuffle(mails)
+    return mails
+
+
 class Command(BaseCommand):
-    help = "Send demo mails through the configured mail backend"
+    help = "Send the demo mails plus random mails for random people"
 
     def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
-            "--bulk",
-            type=int,
-            default=0,
-            help="Also send a mail to this many extra addresses, to fill the overview",
+            "--users", type=int, default=10, help="Random people to send mail to"
+        )
+        parser.add_argument(
+            "--seed", type=int, default=None, help="Seed for a repeatable set of mails"
         )
 
-    def handle(self, *args: Any, bulk: int, **options: Any) -> None:
-        mails = demo_mails() + [
-            build(
-                f"Bulk mail {number}",
-                [f"user{number:03d}@example.com"],
-                f"Bulk mail number {number}.",
-            )
-            for number in range(1, bulk + 1)
-        ]
+    def handle(self, *args: Any, users: int, seed: int | None, **options: Any) -> None:
+        mails = demo_mails() + random_mails(users, random.Random(seed))
         sent = sum(mail.send() for mail in mails)
         self.stdout.write(self.style.SUCCESS(f"Sent {sent} test mails"))

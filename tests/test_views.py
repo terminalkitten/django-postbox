@@ -304,3 +304,14 @@ def test_settings_never_redirects_off_site(staff_client, storage):
     )
     assert response.url == reverse("postbox:overview")
 
+
+def test_random_mails_give_each_person_their_own_inbox():
+    import random
+
+    from tests.project.management.commands.send_test_mails import random_mails
+
+    mails = random_mails(10, random.Random(1))
+    people = {mail.to[0] for mail in mails}
+    assert len(people) == 10
+    assert len({mail.subject for mail in mails}) > 50
+    assert random_mails(10, random.Random(1))[0].subject == mails[0].subject
