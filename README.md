@@ -7,7 +7,7 @@
 <h1 align="center">django-postbox</h1>
 
 <p align="center">
-  <strong>See every mail your Django project sends, in an inbox per address.</strong><br>
+  <strong>Catch outgoing Django mail and read it in an inbox per recipient.</strong><br>
   For local development, review apps and staging: read password resets, invites and receipts<br>
   the way your users will, with HTML, text, headers and attachments. No SMTP server needed.
 </p>

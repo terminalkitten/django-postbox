@@ -1,6 +1,6 @@
 # django-postbox documentation, built with dokk: uv run dokk serve / uv run dokk build
 title = "Django Postbox"
-description = "Catch outgoing Django mail and browse it per address, like a real inbox."
+description = "Catch outgoing Django mail and read it in an inbox per recipient."
 site_url = "https://terminalkitten.github.io/django-postbox/"
 content_dir = "docs"
 

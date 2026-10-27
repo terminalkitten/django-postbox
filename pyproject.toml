@@ -1,20 +1,31 @@
 [project]
 name = "django-postbox"
 dynamic = ["version"]
-description = "Catch outgoing Django mail and browse it per address, like a real inbox"
+description = "Catch outgoing Django mail and read it in an inbox per recipient"
 readme = "README.md"
 authors = [{ name = "terminalkitten", email = "25918382+terminalkitten@users.noreply.github.com" }]
 license = "MIT"
 license-files = ["LICENSE"]
-keywords = ["django", "email", "mail", "inbox", "development", "htmx"]
+keywords = [
+    "django",
+    "django-email",
+    "email",
+    "email-backend",
+    "mail-catcher",
+    "inbox",
+    "htmx",
+    "development-tools",
+    "testing",
+]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Environment :: Web Environment",
     "Framework :: Django",
     "Framework :: Django :: 5.2",
     "Framework :: Django :: 6.0",
     "Framework :: Django :: 6.1",
     "Intended Audience :: Developers",
+    "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.11",
@@ -22,6 +33,9 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
     "Topic :: Communications :: Email",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Testing",
+    "Typing :: Typed",
 ]
 requires-python = ">=3.11"
 dependencies = ["django>=5.2"]
@@ -40,9 +54,11 @@ dev = [
 ]
 
 [project.urls]
-Home = "https://github.com/terminalkitten/django-postbox"
+Homepage = "https://github.com/terminalkitten/django-postbox"
+Documentation = "https://terminalkitten.github.io/django-postbox/"
 Source = "https://github.com/terminalkitten/django-postbox"
 Issues = "https://github.com/terminalkitten/django-postbox/issues"
+Changelog = "https://github.com/terminalkitten/django-postbox/releases"
 
 [build-system]
 requires = ["hatchling", "hatch-vcs"]
