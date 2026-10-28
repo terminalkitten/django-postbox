@@ -23,26 +23,47 @@
         <form method="get" role="search">
           <input class="pb-search" type="search" name="q" value="{{ query }}" placeholder="Search addresses" aria-label="Search addresses"
                  hx-get="{{ request.path }}" hx-trigger="input changed delay:300ms, search"
-                 hx-target="#inbox-rows" hx-select="#inbox-rows" hx-select-oob="#status" hx-swap="outerHTML" hx-push-url="true">
+                 hx-target="#inbox-rows" hx-select="#inbox-rows" hx-select-oob="#status,#pagination" hx-swap="outerHTML" hx-push-url="true">
         </form>
       {% endif %}
     </div>
-    <div id="inbox-rows">
-    {% include "postbox/_poller.html" with target="#inbox-rows" %}
-    {% for inbox in page_obj %}
-      <a class="pb-row" href="{% url 'postbox:inbox' inbox.hash %}">
-        <span class="pb-address">{{ inbox.address }}</span>
-        <span class="pb-badge">{{ inbox.count }}</span>
-        <time class="pb-muted" datetime="{{ inbox.last_received|date:'c' }}">{{ inbox.last_received|ago }}</time>
-      </a>
-    {% empty %}
-      <p class="pb-empty">{% if query %}No inbox matches “{{ query }}”.{% else %}No mail captured yet. Send some and it shows up here.{% endif %}</p>
-    {% endfor %}
+
+    {# The scroll container is never swapped, so its scroll position stays #}
+    <div class="pb-overview-scroll">
+      <div id="inbox-rows">
+      {% include "postbox/_poller.html" with target="#inbox-rows" oob="#status,#pagination" %}
+      {% for inbox in page_obj %}
+        <a class="pb-row" href="{% url 'postbox:inbox' inbox.hash %}">
+          <span class="pb-address">{{ inbox.address }}</span>
+          <span class="pb-row-subject">{{ inbox.last_subject|default:"(no subject)" }}</span>
+          <span class="pb-badge" title="{{ inbox.count }} mail{{ inbox.count|pluralize }}">{{ inbox.count }}</span>
+          <time class="pb-muted pb-row-time" datetime="{{ inbox.last_received|date:'c' }}">{{ inbox.last_received|ago }}</time>
+        </a>
+      {% empty %}
+        <p class="pb-empty">{% if query %}No inbox matches “{{ query }}”.{% else %}No mail captured yet. Send some and it shows up here.{% endif %}</p>
+      {% endfor %}
+      </div>
+    </div>
+
+    {# Pinned below the rows, so the buttons never end up under the status bar #}
+    <div id="pagination">
     {% if page_obj.paginator.num_pages > 1 %}
       <nav class="pb-pagination" aria-label="Pages">
-        {% if page_obj.has_previous %}<a class="pb-button" href="{% querystring page=page_obj.previous_page_number %}">Previous</a>{% endif %}
+        {% if page_obj.has_previous %}
+          <a class="pb-button" href="{% querystring page=1 %}">First</a>
+          <a class="pb-button" href="{% querystring page=page_obj.previous_page_number %}">Previous</a>
+        {% else %}
+          <span class="pb-button" aria-disabled="true">First</span>
+          <span class="pb-button" aria-disabled="true">Previous</span>
+        {% endif %}
         <span class="pb-muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} · {{ page_obj.paginator.count }} inboxes</span>
-        {% if page_obj.has_next %}<a class="pb-button" href="{% querystring page=page_obj.next_page_number %}">Next</a>{% endif %}
+        {% if page_obj.has_next %}
+          <a class="pb-button" href="{% querystring page=page_obj.next_page_number %}">Next</a>
+          <a class="pb-button" href="{% querystring page=page_obj.paginator.num_pages %}">Last</a>
+        {% else %}
+          <span class="pb-button" aria-disabled="true">Next</span>
+          <span class="pb-button" aria-disabled="true">Last</span>
+        {% endif %}
       </nav>
     {% endif %}
     </div>

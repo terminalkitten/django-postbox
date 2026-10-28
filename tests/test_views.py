@@ -94,6 +94,7 @@ def test_ago_filter():
 
     assert ago(timezone.now()) == "just now"
     assert ago(timezone.now() - timedelta(minutes=5)) == "5\xa0minutes ago"
+    assert ago(timezone.now() - timedelta(hours=13, minutes=43)) == "13\xa0hours ago"
 
 
 def test_inbox_opens_newest_message(staff_client, storage, send, welcome, message):

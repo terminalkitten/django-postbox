@@ -10,7 +10,7 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 
 from django.core.cache import caches
-from django.db.models import Count, Max
+from django.db.models import Count, Max, OuterRef, Subquery
 from django.utils import timezone
 from django.utils.module_loading import import_string
 
@@ -53,6 +53,7 @@ class Inbox:
     hash: str
     count: int
     last_received: datetime
+    last_subject: str = ""
 
 
 @dataclass
@@ -142,7 +143,11 @@ class BaseStorage:
                 inboxes[existing.hash] = replace(existing, count=existing.count + 1)
             else:
                 inboxes[message.hash] = Inbox(
-                    message.recipient, message.hash, 1, message.created_at
+                    message.recipient,
+                    message.hash,
+                    1,
+                    message.created_at,
+                    message.subject,
                 )
         return list(inboxes.values())
 
@@ -218,12 +223,14 @@ class DatabaseStorage(BaseStorage):
         return f"{queryset.count()}.{newest_id}" if newest_id else "empty"
 
     def inboxes(self) -> list[Inbox]:
+        newest = self.model.objects.filter(hash=OuterRef("hash")).order_by("-created_at")
         rows = (
             self.model.objects.values("hash")
             .annotate(
                 address=Max("recipient"),
                 count=Count("id"),
                 last_received=Max("created_at"),
+                last_subject=Subquery(newest.values("subject")[:1]),
             )
             .order_by("-last_received")
         )
@@ -233,6 +240,7 @@ class DatabaseStorage(BaseStorage):
                 row["hash"],
                 row["count"],
                 row["last_received"],
+                row["last_subject"],
             )
             for row in rows
         ]

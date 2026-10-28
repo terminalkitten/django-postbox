@@ -35,9 +35,9 @@ def test_save_get_list_delete(storage):
 
 
 def test_inboxes_grouped_newest_first(storage):
-    storage.save(stored("alice@example.com"))
+    storage.save(stored("alice@example.com", subject="Older"))
     storage.save(stored("bob@example.com"))
-    storage.save(stored("alice@example.com"))
+    storage.save(stored("alice@example.com", subject="Newest"))
 
     inboxes = storage.inboxes()
     assert [(inbox.address, inbox.count) for inbox in inboxes] == [
@@ -45,6 +45,7 @@ def test_inboxes_grouped_newest_first(storage):
         ("bob@example.com", 1),
     ]
     assert inboxes[0].hash == hash_address("alice@example.com")
+    assert inboxes[0].last_subject == "Newest"
 
 
 def test_clear_one_inbox_or_all(storage):

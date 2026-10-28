@@ -38,7 +38,7 @@ def postbox_assets(context: Context) -> SafeString:
 
 @register.filter
 def ago(moment: datetime) -> str:
-    """Return "just now" within a minute, else "<timesince> ago"."""
+    """Return "just now" within a minute, else the largest unit: "3 hours ago"."""
     if timezone.now() - moment < timedelta(minutes=1):
         return "just now"
-    return f"{timesince(moment)} ago"
+    return f"{timesince(moment, depth=1)} ago"
