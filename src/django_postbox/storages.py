@@ -223,7 +223,9 @@ class DatabaseStorage(BaseStorage):
         return f"{queryset.count()}.{newest_id}" if newest_id else "empty"
 
     def inboxes(self) -> list[Inbox]:
-        newest = self.model.objects.filter(hash=OuterRef("hash")).order_by("-created_at")
+        newest = self.model.objects.filter(hash=OuterRef("hash")).order_by(
+            "-created_at"
+        )
         rows = (
             self.model.objects.values("hash")
             .annotate(
